@@ -129,11 +129,28 @@ npm run build
 ```
 빌드 결과물은 `dist/` 폴더에 생성되며, 정적 웹 서버에 그대로 배포할 수 있습니다.
 
-#### 데스크톱 설치 패키지 빌드:
+#### 데스크톱 설치 패키지 빌드 (OS별 인스톨러 생성):
+결과물은 **`release/`** 배포 폴더에 자동으로 생성됩니다.
+
 ```bash
-npm run electron:build
+# macOS 전용 빌드 (.dmg, .pkg, .zip 생성)
+npm run dist:mac
+
+# Windows 전용 빌드 (.exe NSIS 설치 마법사 & portable 단일 실행 파일 생성)
+npm run dist:win
+
+# 전체 OS 동시 빌드 (macOS + Windows)
+npm run dist:all
 ```
-`dist-electron-package/` 폴더에 현재 OS에 맞는 인스톨러(macOS: `.dmg`/`.zip`, Windows: `.exe`, Linux: `.AppImage`/`.deb`)가 생성됩니다.
+
+#### 생성되는 배포 설치 파일 목록 (`release/` 폴더):
+| OS | 파일 형식 | 설명 |
+|----|----------|------|
+| **macOS** | `.dmg` | 드래그 앤 드롭 디스크 이미지 설치 파일 |
+| **macOS** | `.pkg` | 시스템 관리자 및 자동 배포용 패키지 인스톨러 |
+| **macOS** | `.zip` | 압축 해제 후 바로 실행 가능한 아카이브 |
+| **Windows** | `.exe` (Setup) | 시작 메뉴 및 바탕화면 바로가기를 생성하는 NSIS 설치 마법사 |
+| **Windows** | `.exe` (Portable) | 별도 설치 없이 바로 실행되는 무설치 포터블 실행 파일 |
 
 ---
 

@@ -12,7 +12,10 @@
     "build:electron-main": "esbuild electron/main.ts --outfile=dist-electron/main.cjs --platform=node --format=cjs --bundle --external:electron && esbuild electron/preload.ts --outfile=dist-electron/preload.cjs --platform=node --format=cjs --bundle --external:electron",
     "electron:dev": "concurrently -k \"vite --port 7788\" \"cross-env NODE_ENV=development wait-on tcp:7788 && npm run build:electron-main && electron dist-electron/main.cjs\"",
     "electron:start": "npm run build:electron-main && electron dist-electron/main.cjs",
-    "electron:build": "npm run build && npm run build:electron-main && electron-builder"
+    "dist:mac": "npm run build && npm run build:electron-main && electron-builder --mac",
+    "dist:win": "npm run build && npm run build:electron-main && electron-builder --win",
+    "dist:all": "npm run build && npm run build:electron-main && electron-builder -mw",
+    "electron:build": "npm run dist:all"
   },
   "keywords": [
     "hwp",
@@ -44,7 +47,7 @@
     "appId": "com.rhwp.studio",
     "productName": "RHWP STUDIO",
     "directories": {
-      "output": "dist-electron-package"
+      "output": "release"
     },
     "files": [
       "dist/**/*",
@@ -52,13 +55,44 @@
     ],
     "mac": {
       "category": "public.app-category.productivity",
-      "target": ["dmg", "zip"]
+      "target": [
+        "dmg",
+        "pkg",
+        "zip"
+      ],
+      "icon": "build/icon.png"
+    },
+    "dmg": {
+      "title": "RHWP STUDIO ${version}",
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "pkg": {
+      "allowAnyLicense": true
     },
     "win": {
-      "target": ["nsis", "portable"]
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "build/icon.png"
     },
-    "linux": {
-      "target": ["AppImage", "deb"]
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "RHWP STUDIO"
     }
   }
 }
