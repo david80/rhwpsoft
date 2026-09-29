@@ -24,51 +24,56 @@
       <nav class="mode-switcher-container" aria-label="문서 작업 모드">
         <button id="btn-mode-viewer" class="mode-btn" title="읽기 전용 깔끔한 뷰어 모드로 전환 (Ctrl+M)">
           <span class="mode-icon">👁️</span>
-          <span>뷰어 모드</span>
+          <span id="text-mode-viewer">뷰어 모드</span>
         </button>
         <button id="btn-mode-editor" class="mode-btn active" title="리본 메뉴와 서식 도구가 제공되는 에디터 모드로 전환 (Ctrl+M)">
           <span class="mode-icon">✏️</span>
-          <span>에디터 모드</span>
+          <span id="text-mode-editor">에디터 모드</span>
         </button>
       </nav>
 
       <!-- Right Header Actions -->
       <div class="header-actions">
         <button id="btn-new-doc" class="btn btn-secondary" title="새 빈 문서 만들기 (Ctrl+N)">
-          <span>📄</span> 새 문서
+          <span>📄</span> <span id="text-btn-new">새 문서</span>
         </button>
         <button id="btn-open-file" class="btn btn-primary" title="한글 파일 열기 (.hwp, .hwpx, .hml) (Ctrl+O)">
-          <span>📂</span> 파일 열기
+          <span>📂</span> <span id="text-btn-open">파일 열기</span>
         </button>
         <button id="btn-sample-doc" class="btn btn-ghost" title="테스트용 예제 문서 즉시 열어보기">
-          <span>✨</span> 샘플 열기
+          <span>✨</span> <span id="text-btn-sample">샘플 열기</span>
         </button>
 
         <div class="dropdown">
           <button id="btn-export-dropdown" class="btn btn-success" title="문서 저장 및 다양한 형식으로 내보내기">
-            <span>💾</span> 내보내기 ▾
+            <span>💾</span> <span id="text-export-btn">내보내기 ▾</span>
           </button>
           <div class="dropdown-menu" id="export-menu">
             <button class="dropdown-item" id="menu-save-hwp">
-              <span>🟦</span> HWP 로 저장 (기본)
+              <span>🟦</span> <span id="text-menu-hwp">HWP 로 저장 (기본)</span>
             </button>
             <button class="dropdown-item" id="menu-save-hwpx">
-              <span>🌐</span> HWPX 로 저장 (표준 XML)
+              <span>🌐</span> <span id="text-menu-hwpx">HWPX 로 저장 (표준 XML)</span>
             </button>
             <button class="dropdown-item" id="menu-save-hml">
-              <span>📑</span> HML 로 저장 (HWPML)
+              <span>📑</span> <span id="text-menu-hml">HML 로 저장 (HWPML)</span>
             </button>
             <button class="dropdown-item" id="menu-save-svg">
-              <span>🖼️</span> SVG 벡터 페이지 내보내기
+              <span>🖼️</span> <span id="text-menu-svg">SVG 벡터 페이지 내보내기</span>
             </button>
             <button class="dropdown-item" id="menu-print">
-              <span>🖨️</span> 문서 인쇄 / PDF 출력
+              <span>🖨️</span> <span id="text-menu-print">문서 인쇄 / PDF 출력</span>
             </button>
           </div>
         </div>
 
         <button id="btn-doc-info" class="btn btn-ghost" title="문서 상세 정보 및 렌더러 진단 확인">
           <span>ℹ️</span>
+        </button>
+
+        <!-- Language Switcher -->
+        <button id="btn-lang-toggle" class="btn btn-secondary" title="언어 변경 / Change Language" style="font-weight: 700; padding: 4px 8px; font-size: 12px;">
+          <span style="font-size: 13px;">🌐</span> <span id="label-current-lang">KO</span>
         </button>
       </div>
     </header>
@@ -105,8 +110,8 @@
       <section class="welcome-screen" id="welcome-screen">
         <div class="welcome-card" id="welcome-drop-card">
           <div class="drop-icon-box">한</div>
-          <h1 class="welcome-title">RHWP STUDIO</h1>
-          <p class="welcome-subtitle">
+          <h1 class="welcome-title" id="welcome-title">RHWP STUDIO</h1>
+          <p class="welcome-subtitle" id="welcome-subtitle">
             한컴 오피스 설치 없이, 브라우저와 데스크톱에서 완벽하게 구동되는 오픈소스 한글 문서 뷰어 및 편집기입니다.
           </p>
 
@@ -119,31 +124,31 @@
 
           <div class="welcome-actions">
             <button id="btn-welcome-open" class="btn btn-primary" style="padding: 10px 22px; font-size: 14px;">
-              <span>📂</span> 한글 문서 열기
+              <span>📂</span> <span id="text-welcome-open">한글 문서 열기</span>
             </button>
             <button id="btn-welcome-sample" class="btn btn-secondary" style="padding: 10px 22px; font-size: 14px;">
-              <span>✨</span> 샘플 문서 열기
+              <span>✨</span> <span id="text-welcome-sample">샘플 문서 열기</span>
             </button>
             <button id="btn-welcome-new" class="btn btn-ghost" style="padding: 10px 20px; font-size: 14px;">
-              <span>📄</span> 새 빈 문서
+              <span>📄</span> <span id="text-welcome-new">새 빈 문서</span>
             </button>
           </div>
 
           <div class="feature-highlights">
             <div class="feature-item">
               <span class="feature-item-icon">⚡</span>
-              <span class="feature-item-title">초고속 WASM 파싱</span>
-              <span class="feature-item-desc">Rust 기반 엔진으로 대용량 문서도 빠르게</span>
+              <span class="feature-item-title" id="feat1-title">초고속 WASM 파싱</span>
+              <span class="feature-item-desc" id="feat1-desc">Rust 기반 엔진으로 대용량 문서도 빠르게</span>
             </div>
             <div class="feature-item">
               <span class="feature-item-icon">✏️</span>
-              <span class="feature-item-title">완전한 서식 편집</span>
-              <span class="feature-item-desc">표, 문단, 수식, 도형, 글자 속성 자유 편집</span>
+              <span class="feature-item-title" id="feat2-title">완전한 서식 편집</span>
+              <span class="feature-item-desc" id="feat2-desc">표, 문단, 수식, 도형, 글자 속성 자유 편집</span>
             </div>
             <div class="feature-item">
               <span class="feature-item-icon">🔒</span>
-              <span class="feature-item-title">100% 로컬 보안</span>
-              <span class="feature-item-desc">서버 전송 없이 PC 내부에서 안전하게 처리</span>
+              <span class="feature-item-title" id="feat3-title">100% 로컬 보안</span>
+              <span class="feature-item-desc" id="feat3-desc">서버 전송 없이 PC 내부에서 안전하게 처리</span>
             </div>
           </div>
         </div>
@@ -155,7 +160,7 @@
       <!-- Drag & Drop Overlay -->
       <div class="drag-overlay" id="drag-overlay">
         <div class="drag-overlay-icon">📥</div>
-        <div class="drag-overlay-text">한글 파일(.hwp, .hwpx, .hml)을 여기에 놓아주세요</div>
+        <div class="drag-overlay-text" id="drag-overlay-text">한글 파일(.hwp, .hwpx, .hml)을 여기에 놓아주세요</div>
       </div>
     </main>
 
@@ -170,7 +175,7 @@
       </div>
 
       <div class="status-center">
-        <span>단축키: <span class="shortcut-hint">Ctrl/Cmd+O</span> 열기 | <span class="shortcut-hint">Ctrl/Cmd+S</span> 저장 | <span class="shortcut-hint">Ctrl/Cmd+M</span> 모드전환</span>
+        <span id="status-shortcuts">단축키: <span class="shortcut-hint">Ctrl/Cmd+O</span> 열기 | <span class="shortcut-hint">Ctrl/Cmd+S</span> 저장 | <span class="shortcut-hint">Ctrl/Cmd+M</span> 모드전환</span>
       </div>
 
       <div class="status-right">
@@ -185,15 +190,15 @@
   <div class="modal-backdrop" id="doc-info-modal">
     <div class="modal-card">
       <div class="modal-header">
-        <h2 class="modal-title">문서 및 렌더러 정보</h2>
+        <h2 class="modal-title" id="modal-title">문서 및 렌더러 정보</h2>
         <button class="modal-close-btn" id="btn-close-modal">✕</button>
       </div>
       <div style="font-size: 13px; line-height: 1.8; color: var(--text-secondary);" id="doc-info-content">
-        <p><strong>문서명:</strong> <span id="modal-info-filename">-</span></p>
-        <p><strong>포맷:</strong> <span id="modal-info-format">-</span></p>
-        <p><strong>페이지 수:</strong> <span id="modal-info-pages">-</span></p>
-        <p><strong>렌더러 백엔드:</strong> <span id="modal-info-backend">Canvas2D</span></p>
-        <p><strong>엔진 라이선스:</strong> MIT License (edwardkim/rhwp)</p>
+        <p><strong id="modal-label-filename">문서명:</strong> <span id="modal-info-filename">-</span></p>
+        <p><strong id="modal-label-format">포맷:</strong> <span id="modal-info-format">-</span></p>
+        <p><strong id="modal-label-pages">페이지 수:</strong> <span id="modal-info-pages">-</span></p>
+        <p><strong id="modal-label-backend">렌더러 백엔드:</strong> <span id="modal-info-backend">Canvas2D</span></p>
+        <p><strong id="modal-label-license">엔진 라이선스:</strong> MIT License (edwardkim/rhwp)</p>
       </div>
       <div style="margin-top: 20px; text-align: right;">
         <button class="btn btn-secondary" id="btn-close-modal-confirm">확인</button>

@@ -12,6 +12,10 @@
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License" />
 </p>
 
+<p align="center">
+  <strong>한국어</strong> | <a href="README_EN.md">English</a>
+</p>
+
 ---
 
 ## 🌟 개요 (Overview)
@@ -26,6 +30,7 @@
 - **웹 & 데스크톱 동시 지원**:
   - 웹 브라우저(`http://localhost:7788`)에서 가볍고 빠르게 실행.
   - Electron 기반 데스크톱 애플리케이션(macOS `.app`/`.dmg`, Windows `.exe`)으로 설치 및 네이티브 실행.
+- **다국어 지원 (i18n)**: 한국어(KO) 및 영어(EN) 원클릭 즉시 전환 지원.
 
 ---
 

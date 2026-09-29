@@ -5,6 +5,7 @@ node_modules/
 dist/
 dist-electron/
 dist-electron-package/
+release/
 
 # Environment and logs
 *.log

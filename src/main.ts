@@ -1,9 +1,11 @@
 import { EditorService } from './services/editor-service';
 import { FileService } from './services/file-service';
 import { ToastService } from './services/toast-service';
+import { I18nService } from './i18n/i18n';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const editorService = EditorService.getInstance();
+  const i18n = I18nService.getInstance();
 
   // Elements
   const welcomeScreen = document.getElementById('welcome-screen') as HTMLElement;
@@ -14,17 +16,40 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Header Elements
   const btnModeViewer = document.getElementById('btn-mode-viewer') as HTMLButtonElement;
   const btnModeEditor = document.getElementById('btn-mode-editor') as HTMLButtonElement;
+  const textModeViewer = document.getElementById('text-mode-viewer') as HTMLElement;
+  const textModeEditor = document.getElementById('text-mode-editor') as HTMLElement;
   const btnNewDoc = document.getElementById('btn-new-doc') as HTMLButtonElement;
+  const textBtnNew = document.getElementById('text-btn-new') as HTMLElement;
   const btnOpenFile = document.getElementById('btn-open-file') as HTMLButtonElement;
+  const textBtnOpen = document.getElementById('text-btn-open') as HTMLElement;
   const btnSampleDoc = document.getElementById('btn-sample-doc') as HTMLButtonElement;
+  const textBtnSample = document.getElementById('text-btn-sample') as HTMLElement;
   const btnExportDropdown = document.getElementById('btn-export-dropdown') as HTMLButtonElement;
+  const textExportBtn = document.getElementById('text-export-btn') as HTMLElement;
   const exportMenu = document.getElementById('export-menu') as HTMLElement;
+  const textMenuHwp = document.getElementById('text-menu-hwp') as HTMLElement;
+  const textMenuHwpx = document.getElementById('text-menu-hwpx') as HTMLElement;
+  const textMenuHml = document.getElementById('text-menu-hml') as HTMLElement;
+  const textMenuSvg = document.getElementById('text-menu-svg') as HTMLElement;
+  const textMenuPrint = document.getElementById('text-menu-print') as HTMLElement;
   const btnDocInfo = document.getElementById('btn-doc-info') as HTMLButtonElement;
+  const btnLangToggle = document.getElementById('btn-lang-toggle') as HTMLButtonElement;
+  const labelCurrentLang = document.getElementById('label-current-lang') as HTMLElement;
 
   // Welcome Screen Elements
+  const welcomeSubtitle = document.getElementById('welcome-subtitle') as HTMLElement;
+  const textWelcomeOpen = document.getElementById('text-welcome-open') as HTMLElement;
+  const textWelcomeSample = document.getElementById('text-welcome-sample') as HTMLElement;
+  const textWelcomeNew = document.getElementById('text-welcome-new') as HTMLElement;
   const btnWelcomeOpen = document.getElementById('btn-welcome-open') as HTMLButtonElement;
   const btnWelcomeSample = document.getElementById('btn-welcome-sample') as HTMLButtonElement;
   const btnWelcomeNew = document.getElementById('btn-welcome-new') as HTMLButtonElement;
+  const feat1Title = document.getElementById('feat1-title') as HTMLElement;
+  const feat1Desc = document.getElementById('feat1-desc') as HTMLElement;
+  const feat2Title = document.getElementById('feat2-title') as HTMLElement;
+  const feat2Desc = document.getElementById('feat2-desc') as HTMLElement;
+  const feat3Title = document.getElementById('feat3-title') as HTMLElement;
+  const feat3Desc = document.getElementById('feat3-desc') as HTMLElement;
 
   // Sub Toolbar Elements
   const badgeFileExt = document.getElementById('badge-file-ext') as HTMLElement;
@@ -43,10 +68,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const statusIndicatorDot = document.getElementById('status-indicator-dot') as HTMLElement;
   const statusText = document.getElementById('status-text') as HTMLElement;
   const statusFileSize = document.getElementById('status-file-size') as HTMLElement;
+  const statusShortcuts = document.getElementById('status-shortcuts') as HTMLElement;
   const statusRendererBadge = document.getElementById('status-renderer-badge') as HTMLElement;
 
   // Modal Elements
   const docInfoModal = document.getElementById('doc-info-modal') as HTMLElement;
+  const modalTitle = document.getElementById('modal-title') as HTMLElement;
+  const modalLabelFilename = document.getElementById('modal-label-filename') as HTMLElement;
+  const modalLabelFormat = document.getElementById('modal-label-format') as HTMLElement;
+  const modalLabelPages = document.getElementById('modal-label-pages') as HTMLElement;
+  const modalLabelBackend = document.getElementById('modal-label-backend') as HTMLElement;
+  const modalLabelLicense = document.getElementById('modal-label-license') as HTMLElement;
   const btnCloseModal = document.getElementById('btn-close-modal') as HTMLButtonElement;
   const btnCloseModalConfirm = document.getElementById('btn-close-modal-confirm') as HTMLButtonElement;
   const modalInfoFilename = document.getElementById('modal-info-filename') as HTMLElement;
@@ -54,8 +86,83 @@ document.addEventListener('DOMContentLoaded', async () => {
   const modalInfoPages = document.getElementById('modal-info-pages') as HTMLElement;
   const modalInfoBackend = document.getElementById('modal-info-backend') as HTMLElement;
 
+  // Render i18n texts
+  function applyLanguage() {
+    const t = i18n.t();
+    const currentLang = i18n.getLang();
+
+    labelCurrentLang.textContent = currentLang.toUpperCase();
+
+    // Mode buttons
+    textModeViewer.textContent = t.mode.viewer;
+    btnModeViewer.title = t.mode.viewerTooltip;
+    textModeEditor.textContent = t.mode.editor;
+    btnModeEditor.title = t.mode.editorTooltip;
+
+    // Header actions
+    textBtnNew.textContent = t.header.newDoc;
+    textBtnOpen.textContent = t.header.openFile;
+    textBtnSample.textContent = t.header.sampleDoc;
+    textExportBtn.textContent = t.header.export;
+    btnDocInfo.title = t.header.docInfo;
+
+    // Export menu
+    textMenuHwp.textContent = t.exportMenu.saveHwp;
+    textMenuHwpx.textContent = t.exportMenu.saveHwpx;
+    textMenuHml.textContent = t.exportMenu.saveHml;
+    textMenuSvg.textContent = t.exportMenu.saveSvg;
+    textMenuPrint.textContent = t.exportMenu.print;
+
+    // Sub-toolbar
+    btnPrevPage.title = t.subToolbar.prevPage;
+    btnNextPage.title = t.subToolbar.nextPage;
+    btnZoomIn.title = t.subToolbar.zoomIn;
+    btnZoomOut.title = t.subToolbar.zoomOut;
+    btnZoomFit.textContent = t.subToolbar.zoomFit;
+    btnFullscreen.title = t.subToolbar.fullscreen;
+
+    // Welcome Screen
+    welcomeSubtitle.textContent = t.welcome.subtitle;
+    textWelcomeOpen.textContent = t.welcome.openBtn;
+    textWelcomeSample.textContent = t.welcome.sampleBtn;
+    textWelcomeNew.textContent = t.welcome.newBtn;
+    feat1Title.textContent = t.welcome.feat1Title;
+    feat1Desc.textContent = t.welcome.feat1Desc;
+    feat2Title.textContent = t.welcome.feat2Title;
+    feat2Desc.textContent = t.welcome.feat2Desc;
+    feat3Title.textContent = t.welcome.feat3Title;
+    feat3Desc.textContent = t.welcome.feat3Desc;
+
+    // Drag overlay
+    const dragTextEl = document.getElementById('drag-overlay-text');
+    if (dragTextEl) dragTextEl.textContent = t.dragOverlay.text;
+
+    // Status bar
+    statusShortcuts.textContent = t.statusbar.shortcuts;
+
+    // Modal
+    modalTitle.textContent = t.modal.title;
+    modalLabelFilename.textContent = t.modal.filename;
+    modalLabelFormat.textContent = t.modal.format;
+    modalLabelPages.textContent = t.modal.pages;
+    modalLabelBackend.textContent = t.modal.backend;
+    modalLabelLicense.textContent = t.modal.license;
+    btnCloseModalConfirm.textContent = t.modal.confirm;
+
+    updateUIState();
+  }
+
+  // Language toggle event
+  btnLangToggle.addEventListener('click', () => {
+    const nextLang = i18n.getLang() === 'ko' ? 'en' : 'ko';
+    i18n.setLang(nextLang);
+    applyLanguage();
+    ToastService.info(nextLang === 'ko' ? '한국어로 변경되었습니다.' : 'Switched to English.');
+  });
+
   // State synchronization helper
   function updateUIState() {
+    const t = i18n.t();
     const fileName = editorService.getCurrentFileName();
     const mode = editorService.getCurrentMode();
     const totalPages = editorService.getTotalPages();
@@ -63,7 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const zoom = editorService.getCurrentZoom();
 
     // Filename & ext badge
-    labelFileName.textContent = fileName;
+    labelFileName.textContent = fileName || t.subToolbar.welcomeDoc;
     const ext = (fileName.split('.').pop() || 'hwp').toUpperCase();
     badgeFileExt.textContent = ext;
     badgeFileExt.className = `doc-format-pill ${ext.toLowerCase()}`;
@@ -71,7 +178,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Status file size
     statusFileSize.style.display = 'inline';
-    statusFileSize.textContent = `| ${totalPages}쪽 문서`;
+    statusFileSize.textContent = `| ${totalPages} ${t.subToolbar.pagesUnit}`;
 
     // Mode buttons
     if (mode === 'viewer') {
@@ -83,7 +190,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Page controls
-    indicatorPage.textContent = `${currentPage} / ${totalPages} 쪽`;
+    indicatorPage.textContent = `${currentPage} / ${totalPages} ${t.subToolbar.pagesUnit}`;
     btnPrevPage.disabled = currentPage <= 1;
     btnNextPage.disabled = currentPage >= totalPages;
 
@@ -93,7 +200,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Modal data
     modalInfoFilename.textContent = fileName;
     modalInfoFormat.textContent = ext;
-    modalInfoPages.textContent = `${totalPages} 쪽`;
+    modalInfoPages.textContent = `${totalPages} ${t.subToolbar.pagesUnit}`;
   }
 
   function showEditorStage() {
@@ -110,14 +217,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Pre-initialize Editor in the background
   try {
     statusIndicatorDot.classList.add('busy');
-    statusText.textContent = 'RHWP 엔진 로딩 중...';
+    statusText.textContent = i18n.t().statusbar.loading;
     await editorService.initialize(editorContainer);
     statusIndicatorDot.classList.remove('busy');
-    statusText.textContent = '준비 완료';
+    statusText.textContent = i18n.t().statusbar.ready;
   } catch (err) {
     console.error('Initial editor boot error:', err);
     statusIndicatorDot.classList.remove('busy');
-    statusText.textContent = '엔진 초기화 오류';
+    statusText.textContent = 'Engine Load Error';
   }
 
   // Mode toggling
@@ -131,19 +238,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Hidden input change
   fileInput.addEventListener('change', async (e) => {
     statusIndicatorDot.classList.add('busy');
-    statusText.textContent = '파일 불러오는 중...';
+    statusText.textContent = i18n.t().statusbar.loading;
     const success = await FileService.handleFileInputChange(e);
     statusIndicatorDot.classList.remove('busy');
-    statusText.textContent = success ? '문서 열림' : '준비 완료';
+    statusText.textContent = success ? i18n.t().statusbar.docOpened : i18n.t().statusbar.ready;
   });
 
   // Sample doc
   async function openSample() {
     statusIndicatorDot.classList.add('busy');
-    statusText.textContent = '예제 문서 로딩 중...';
+    statusText.textContent = i18n.t().statusbar.loading;
     const success = await FileService.loadSampleDocument();
     statusIndicatorDot.classList.remove('busy');
-    statusText.textContent = success ? '샘플 문서 열림' : '준비 완료';
+    statusText.textContent = success ? i18n.t().statusbar.docOpened : i18n.t().statusbar.ready;
   }
   btnSampleDoc.addEventListener('click', openSample);
   btnWelcomeSample.addEventListener('click', openSample);
@@ -151,10 +258,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   // New doc
   async function createNew() {
     statusIndicatorDot.classList.add('busy');
-    statusText.textContent = '새 문서 작성 중...';
+    statusText.textContent = i18n.t().statusbar.loading;
     await editorService.createNewDocument();
     statusIndicatorDot.classList.remove('busy');
-    statusText.textContent = '새 문서 준비됨';
+    statusText.textContent = i18n.t().statusbar.newDocReady;
   }
   btnNewDoc.addEventListener('click', createNew);
   btnWelcomeNew.addEventListener('click', createNew);
@@ -268,12 +375,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       const ext = file.name.split('.').pop()?.toLowerCase();
       if (['hwp', 'hwpx', 'hml'].includes(ext || '')) {
         statusIndicatorDot.classList.add('busy');
-        statusText.textContent = '문서 로딩 중...';
+        statusText.textContent = i18n.t().statusbar.loading;
         await FileService.loadBrowserFile(file);
         statusIndicatorDot.classList.remove('busy');
-        statusText.textContent = '문서 열림';
+        statusText.textContent = i18n.t().statusbar.docOpened;
       } else {
-        ToastService.error('한글 문서(.hwp, .hwpx, .hml) 파일만 열 수 있습니다.');
+        ToastService.error(i18n.t().toasts.onlyHwpAllowed);
       }
     }
   });
@@ -329,6 +436,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Initial state sync
-  updateUIState();
+  // Initial language setup & state sync
+  applyLanguage();
 });
