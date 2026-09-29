@@ -9,6 +9,17 @@ let localServerPort = 7788;
 
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
+function terminateApp() {
+  if (localServer) {
+    try {
+      localServer.close();
+    } catch {
+      // ignore
+    }
+  }
+  app.exit(0);
+}
+
 function startLocalServer(): Promise<number> {
   return new Promise((resolve, reject) => {
     const distPath = path.join(__dirname, '../dist');
@@ -30,7 +41,6 @@ function startLocalServer(): Promise<number> {
     };
 
     localServer = http.createServer((req, res) => {
-      // Cross-origin headers for WASM shared array buffer
       res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
       res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
       res.setHeader('Access-Control-Allow-Origin', '*');
@@ -40,7 +50,6 @@ function startLocalServer(): Promise<number> {
 
       const filePath = path.join(distPath, safeUrl);
 
-      // Prevent directory traversal
       if (!filePath.startsWith(distPath)) {
         res.writeHead(403);
         res.end('Forbidden');
@@ -49,7 +58,6 @@ function startLocalServer(): Promise<number> {
 
       fs.readFile(filePath, (err, data) => {
         if (err) {
-          // SPA fallback to index.html
           fs.readFile(path.join(distPath, 'index.html'), (indexErr, indexData) => {
             if (indexErr) {
               res.writeHead(404);
@@ -69,7 +77,6 @@ function startLocalServer(): Promise<number> {
       });
     });
 
-    // Try port 7789 or 0 (any available port)
     localServer.listen(0, '127.0.0.1', () => {
       const addr = localServer?.address();
       if (addr && typeof addr === 'object') {
@@ -103,6 +110,11 @@ async function createWindow() {
     },
   });
 
+  // iframe 내부의 beforeunload 다이얼로그나 차단 동작을 무시하고 종료 허용
+  mainWindow.webContents.on('will-prevent-unload', (event) => {
+    event.preventDefault();
+  });
+
   if (isDev) {
     const devUrl = 'http://127.0.0.1:7788';
     mainWindow.loadURL(devUrl).catch(() => {
@@ -119,6 +131,11 @@ async function createWindow() {
       mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
     }
   }
+
+  // 창 닫기 시 즉시 종료
+  mainWindow.on('close', () => {
+    terminateApp();
+  });
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -144,7 +161,11 @@ function setupAppMenu() {
               { role: 'hideOthers' as const, label: '기타 숨기기' },
               { role: 'unhide' as const, label: '모두 표시' },
               { type: 'separator' as const },
-              { role: 'quit' as const, label: 'RHWP STUDIO 종료' },
+              {
+                label: 'RHWP STUDIO 종료',
+                accelerator: 'CmdOrCtrl+Q',
+                click: () => terminateApp(),
+              },
             ],
           },
         ]
@@ -180,7 +201,11 @@ function setupAppMenu() {
           click: () => mainWindow?.webContents.send('menu:action', 'print'),
         },
         { type: 'separator' },
-        isMac ? { role: 'close', label: '창 닫기' } : { role: 'quit', label: '종료' },
+        {
+          label: '종료',
+          accelerator: isMac ? 'Cmd+Q' : 'Alt+F4',
+          click: () => terminateApp(),
+        },
       ],
     },
     {
@@ -298,10 +323,5 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
-  if (localServer) {
-    localServer.close();
-  }
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  terminateApp();
 });

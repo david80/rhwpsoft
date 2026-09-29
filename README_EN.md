@@ -115,6 +115,42 @@ All outputs are created in the **`release/`** directory.
 
 ---
 
+## 🔏 Code Signing & Security Setup
+
+Scripts are provided to bypass OS security warnings without paid developer certificates.
+
+### 🍎 macOS ("Unidentified Developer" Bypass)
+Permanently remove the quarantine attribute:
+```bash
+./scripts/fix-macos-quarantine.sh
+```
+Or manually:
+```bash
+xattr -cr "/Applications/RHWP STUDIO.app"
+```
+
+### 🪟 Windows (SmartScreen Bypass & Certificate Installation)
+1. **Generate Self-Signed Certificate**:
+   ```bash
+   ./scripts/create-self-signed-cert.sh
+   ```
+2. **Install Certificate into Windows Trusted Root Store**:
+   - Right-click `scripts/install-cert-windows.bat` and select **[Run as Administrator]**.
+
+---
+
+## 🖋️ Stamp & Signature Image Alignment Guide
+
+Notes regarding layout alignment between Hancom Office and the open-source `rhwp` engine inside table cells:
+
+- **High-Precision CanvasKit Pipeline**: Configured with `renderer: 'auto'` to activate CanvasKit with exact font shaping and layout geometry.
+- **Fine-tuning Signature Alignment**:
+  1. Click **`✏️ Editor Mode`** in the top bar.
+  2. Click the stamp or signature image to select it.
+  3. Drag with your mouse or use **arrow keys** on your keyboard to align it over `(인)` or `(서명)`, then save (`Ctrl/Cmd + S`).
+
+---
+
 ## 🔒 Security & Privacy
 
 All document parsing, rendering, and editing processes are executed **100% locally** within the client browser / local WASM runtime. No document content is ever sent to external cloud servers.
