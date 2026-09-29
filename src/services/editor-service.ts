@@ -36,6 +36,7 @@ export class EditorService {
 
       this.editor = await createStudio(container, {
         studioUrl: localStudioUrl,
+        renderer: 'auto',
         plugins: ['hwpctrl'],
         chrome: {
           menu: true,

@@ -78,7 +78,8 @@
       ]
     },
     "pkg": {
-      "allowAnywhere": true
+      "allowAnywhere": false,
+      "installLocation": "/Applications"
     },
     "win": {
       "target": [
