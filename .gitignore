@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Production build outputs
+dist/
+dist-electron/
+dist-electron-package/
+
+# Environment and logs
+*.log
+.DS_Store
+
+# Temporary files
+/tmp/

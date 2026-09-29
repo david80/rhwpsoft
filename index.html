@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RHWP STUDIO — HWP/HWPX 문서 뷰어 & 편집기</title>
+  <meta name="description" content="Rust + WebAssembly 기반 초고속 오픈소스 한글 HWP/HWPX 문서 뷰어 및 편집기 소프트웨어" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/><polyline points='14 2 14 8 20 8'/><line x1='16' y1='13' x2='8' y2='13'/><line x1='16' y1='17' x2='8' y2='17'/><polyline points='10 9 9 9 8 9'/></svg>" />
+  <link rel="stylesheet" href="/src/styles/app.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Top Header -->
+    <header class="app-header" id="main-header">
+      <div class="brand-section">
+        <div class="brand-logo-wrapper">
+          <div class="brand-logo-icon">한</div>
+          <span class="brand-title">RHWP STUDIO</span>
+        </div>
+        <span class="brand-badge">v0.8.6 Engine</span>
+      </div>
+
+      <!-- Center: Mode Switcher -->
+      <nav class="mode-switcher-container" aria-label="문서 작업 모드">
+        <button id="btn-mode-viewer" class="mode-btn" title="읽기 전용 깔끔한 뷰어 모드로 전환 (Ctrl+M)">
+          <span class="mode-icon">👁️</span>
+          <span>뷰어 모드</span>
+        </button>
+        <button id="btn-mode-editor" class="mode-btn active" title="리본 메뉴와 서식 도구가 제공되는 에디터 모드로 전환 (Ctrl+M)">
+          <span class="mode-icon">✏️</span>
+          <span>에디터 모드</span>
+        </button>
+      </nav>
+
+      <!-- Right Header Actions -->
+      <div class="header-actions">
+        <button id="btn-new-doc" class="btn btn-secondary" title="새 빈 문서 만들기 (Ctrl+N)">
+          <span>📄</span> 새 문서
+        </button>
+        <button id="btn-open-file" class="btn btn-primary" title="한글 파일 열기 (.hwp, .hwpx, .hml) (Ctrl+O)">
+          <span>📂</span> 파일 열기
+        </button>
+        <button id="btn-sample-doc" class="btn btn-ghost" title="테스트용 예제 문서 즉시 열어보기">
+          <span>✨</span> 샘플 열기
+        </button>
+
+        <div class="dropdown">
+          <button id="btn-export-dropdown" class="btn btn-success" title="문서 저장 및 다양한 형식으로 내보내기">
+            <span>💾</span> 내보내기 ▾
+          </button>
+          <div class="dropdown-menu" id="export-menu">
+            <button class="dropdown-item" id="menu-save-hwp">
+              <span>🟦</span> HWP 로 저장 (기본)
+            </button>
+            <button class="dropdown-item" id="menu-save-hwpx">
+              <span>🌐</span> HWPX 로 저장 (표준 XML)
+            </button>
+            <button class="dropdown-item" id="menu-save-hml">
+              <span>📑</span> HML 로 저장 (HWPML)
+            </button>
+            <button class="dropdown-item" id="menu-save-svg">
+              <span>🖼️</span> SVG 벡터 페이지 내보내기
+            </button>
+            <button class="dropdown-item" id="menu-print">
+              <span>🖨️</span> 문서 인쇄 / PDF 출력
+            </button>
+          </div>
+        </div>
+
+        <button id="btn-doc-info" class="btn btn-ghost" title="문서 상세 정보 및 렌더러 진단 확인">
+          <span>ℹ️</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Sub Toolbar (File status & View Controls) -->
+    <div class="sub-toolbar" id="sub-toolbar">
+      <div class="doc-info-badge" id="doc-badge-container">
+        <span class="doc-format-pill" id="badge-file-ext">HWP</span>
+        <span class="doc-name" id="label-file-name">환영합니다 - 파일을 열어주세요</span>
+        <span class="dirty-indicator" id="indicator-dirty" style="display: none;" title="수정된 내용이 있습니다"></span>
+      </div>
+
+      <div class="toolbar-controls">
+        <div class="control-group" title="페이지 이동">
+          <button class="control-btn" id="btn-prev-page" title="이전 페이지">◀</button>
+          <span class="page-indicator" id="indicator-page">1 / 1 쪽</span>
+          <button class="control-btn" id="btn-next-page" title="다음 페이지">▶</button>
+        </div>
+
+        <div class="control-group" title="화면 배율 조절">
+          <button class="control-btn" id="btn-zoom-out" title="축소">－</button>
+          <span class="page-indicator" id="indicator-zoom">100%</span>
+          <button class="control-btn" id="btn-zoom-in" title="확대">＋</button>
+          <button class="control-btn" id="btn-zoom-fit" title="쪽 맞춤" style="width: auto; padding: 0 6px; font-size: 11px;">맞춤</button>
+        </div>
+
+        <button id="btn-fullscreen" class="control-btn" title="전체 화면 토글" style="width: 28px; height: 28px;">⛶</button>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="main-stage" id="main-stage">
+      <!-- Welcome / Drop Screen -->
+      <section class="welcome-screen" id="welcome-screen">
+        <div class="welcome-card" id="welcome-drop-card">
+          <div class="drop-icon-box">한</div>
+          <h1 class="welcome-title">RHWP STUDIO</h1>
+          <p class="welcome-subtitle">
+            한컴 오피스 설치 없이, 브라우저와 데스크톱에서 완벽하게 구동되는 오픈소스 한글 문서 뷰어 및 편집기입니다.
+          </p>
+
+          <div class="format-tags">
+            <span class="format-tag">HWP 5.0 Binary</span>
+            <span class="format-tag">HWPX Open XML</span>
+            <span class="format-tag">HWPML 2.9 (HML)</span>
+            <span class="format-tag">WASM Engine</span>
+          </div>
+
+          <div class="welcome-actions">
+            <button id="btn-welcome-open" class="btn btn-primary" style="padding: 10px 22px; font-size: 14px;">
+              <span>📂</span> 한글 문서 열기
+            </button>
+            <button id="btn-welcome-sample" class="btn btn-secondary" style="padding: 10px 22px; font-size: 14px;">
+              <span>✨</span> 샘플 문서 열기
+            </button>
+            <button id="btn-welcome-new" class="btn btn-ghost" style="padding: 10px 20px; font-size: 14px;">
+              <span>📄</span> 새 빈 문서
+            </button>
+          </div>
+
+          <div class="feature-highlights">
+            <div class="feature-item">
+              <span class="feature-item-icon">⚡</span>
+              <span class="feature-item-title">초고속 WASM 파싱</span>
+              <span class="feature-item-desc">Rust 기반 엔진으로 대용량 문서도 빠르게</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-item-icon">✏️</span>
+              <span class="feature-item-title">완전한 서식 편집</span>
+              <span class="feature-item-desc">표, 문단, 수식, 도형, 글자 속성 자유 편집</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-item-icon">🔒</span>
+              <span class="feature-item-title">100% 로컬 보안</span>
+              <span class="feature-item-desc">서버 전송 없이 PC 내부에서 안전하게 처리</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Editor Host Container -->
+      <div class="editor-container" id="editor-container"></div>
+
+      <!-- Drag & Drop Overlay -->
+      <div class="drag-overlay" id="drag-overlay">
+        <div class="drag-overlay-icon">📥</div>
+        <div class="drag-overlay-text">한글 파일(.hwp, .hwpx, .hml)을 여기에 놓아주세요</div>
+      </div>
+    </main>
+
+    <!-- Bottom Status Bar -->
+    <footer class="app-statusbar" id="app-statusbar">
+      <div class="status-left">
+        <div class="status-indicator">
+          <span class="status-dot" id="status-indicator-dot"></span>
+          <span id="status-text">준비 완료</span>
+        </div>
+        <span id="status-file-size" style="display: none;">| 0 KB</span>
+      </div>
+
+      <div class="status-center">
+        <span>단축키: <span class="shortcut-hint">Ctrl/Cmd+O</span> 열기 | <span class="shortcut-hint">Ctrl/Cmd+S</span> 저장 | <span class="shortcut-hint">Ctrl/Cmd+M</span> 모드전환</span>
+      </div>
+
+      <div class="status-right">
+        <span id="status-renderer-badge">Renderer: Canvas2D</span>
+        <span>•</span>
+        <span>RHWP Engine v0.8.6</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Document Info Modal -->
+  <div class="modal-backdrop" id="doc-info-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">문서 및 렌더러 정보</h2>
+        <button class="modal-close-btn" id="btn-close-modal">✕</button>
+      </div>
+      <div style="font-size: 13px; line-height: 1.8; color: var(--text-secondary);" id="doc-info-content">
+        <p><strong>문서명:</strong> <span id="modal-info-filename">-</span></p>
+        <p><strong>포맷:</strong> <span id="modal-info-format">-</span></p>
+        <p><strong>페이지 수:</strong> <span id="modal-info-pages">-</span></p>
+        <p><strong>렌더러 백엔드:</strong> <span id="modal-info-backend">Canvas2D</span></p>
+        <p><strong>엔진 라이선스:</strong> MIT License (edwardkim/rhwp)</p>
+      </div>
+      <div style="margin-top: 20px; text-align: right;">
+        <button class="btn btn-secondary" id="btn-close-modal-confirm">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden File Input for Web Browser -->
+  <input type="file" id="file-input" accept=".hwp,.hwpx,.hml" />
+
+  <!-- Toast Notification Area -->
+  <div id="toast-container"></div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

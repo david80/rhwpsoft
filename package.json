@@ -1,0 +1,64 @@
+{
+  "name": "rhwp-studio",
+  "productName": "RHWP STUDIO",
+  "version": "1.0.0",
+  "description": "RHWP STUDIO — Modern HWP/HWPX Document Viewer & Editor",
+  "main": "dist-electron/main.cjs",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "build:electron-main": "esbuild electron/main.ts --outfile=dist-electron/main.cjs --platform=node --format=cjs --bundle --external:electron && esbuild electron/preload.ts --outfile=dist-electron/preload.cjs --platform=node --format=cjs --bundle --external:electron",
+    "electron:dev": "concurrently -k \"vite --port 7788\" \"cross-env NODE_ENV=development wait-on tcp:7788 && npm run build:electron-main && electron dist-electron/main.cjs\"",
+    "electron:start": "npm run build:electron-main && electron dist-electron/main.cjs",
+    "electron:build": "npm run build && npm run build:electron-main && electron-builder"
+  },
+  "keywords": [
+    "hwp",
+    "hwpx",
+    "hml",
+    "editor",
+    "viewer",
+    "rhwp",
+    "rhwp-studio",
+    "electron"
+  ],
+  "author": "rhwp",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "electron": "^35.0.0",
+    "electron-builder": "^25.1.8",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.0",
+    "wait-on": "^8.0.2"
+  },
+  "dependencies": {
+    "@rhwp/core": "^0.8.6",
+    "@rhwp/editor": "^0.8.6"
+  },
+  "build": {
+    "appId": "com.rhwp.studio",
+    "productName": "RHWP STUDIO",
+    "directories": {
+      "output": "dist-electron-package"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": ["dmg", "zip"]
+    },
+    "win": {
+      "target": ["nsis", "portable"]
+    },
+    "linux": {
+      "target": ["AppImage", "deb"]
+    }
+  }
+}
