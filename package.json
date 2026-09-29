@@ -13,9 +13,14 @@
     "electron:dev": "concurrently -k \"vite --port 7788\" \"cross-env NODE_ENV=development wait-on tcp:7788 && npm run build:electron-main && electron dist-electron/main.cjs\"",
     "electron:start": "npm run build:electron-main && electron dist-electron/main.cjs",
     "dist:mac": "npm run build && npm run build:electron-main && electron-builder --mac",
+    "dist:mac:arm64": "npm run build && npm run build:electron-main && electron-builder --mac --arm64",
+    "dist:mac:x64": "npm run build && npm run build:electron-main && electron-builder --mac --x64",
+    "dist:mac:universal": "npm run build && npm run build:electron-main && electron-builder --mac --universal",
     "dist:win": "npm run build && npm run build:electron-main && electron-builder --win",
+    "dist:win:x64": "npm run build && npm run build:electron-main && electron-builder --win --x64",
     "dist:all": "npm run build && npm run build:electron-main && electron-builder -mw",
-    "electron:build": "npm run dist:all"
+    "electron:build": "npm run dist:all",
+    "dist:release": "npm run build && npm run build:electron-main && electron-builder --mac --arm64 && electron-builder --mac --x64 && electron-builder --win --x64"
   },
   "keywords": [
     "hwp",
@@ -56,9 +61,14 @@
     "mac": {
       "category": "public.app-category.productivity",
       "target": [
-        "dmg",
-        "pkg",
-        "zip"
+        {
+          "target": "dmg",
+          "arch": ["arm64", "x64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["arm64", "x64"]
+        }
       ],
       "icon": "build/icon.png"
     },
@@ -83,8 +93,14 @@
     },
     "win": {
       "target": [
-        "nsis",
-        "portable"
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
       ],
       "icon": "build/icon.png",
       "signAndEditExecutable": false
