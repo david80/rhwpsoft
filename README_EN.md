@@ -139,15 +139,13 @@ xattr -cr "/Applications/RHWP STUDIO.app"
 
 ---
 
-## 🖋️ Stamp & Signature Image Alignment Guide
+## 🖋️ Smart Signature & Stamp Visual Alignment Patch
 
-Notes regarding layout alignment between Hancom Office and the open-source `rhwp` engine inside table cells:
+To resolve an upstream layout issue where floating signature images drift into preceding boxes, RHWP STUDIO includes a built-in non-destructive alignment patch (**[PATCH-001](PATCHES.md#patch-001-스마트-서명-및-직인-위치-자동-보정-smart-signature--stamp-alignment)**).
 
-- **High-Precision CanvasKit Pipeline**: Configured with `renderer: 'auto'` to activate CanvasKit with exact font shaping and layout geometry.
-- **Fine-tuning Signature Alignment**:
-  1. Click **`✏️ Editor Mode`** in the top bar.
-  2. Click the stamp or signature image to select it.
-  3. Drag with your mouse or use **arrow keys** on your keyboard to align it over `(인)` or `(서명)`, then save (`Ctrl/Cmd + S`).
+- **100% Binary Preserving (Non-destructive)**: Does not mutate document coordinates in the HWP binary. Instead, the Canvas renderer intercepts render calls and visually snaps signatures over the `(인)` / `(서명)` anchor. Re-saving or opening documents in original Hancom Office preserves pristine layout integrity.
+- **Future Upstream Synchronization**: Once an official layout fix is merged in upstream `edwardkim/rhwp`, this visual patch will be smoothly phased out in favor of the official WASM core.
+- **Detailed Patch History**: Please refer to 📄 **[PATCHES.md](PATCHES.md)** for complete technical patch logs and architectural decisions.
 
 ---
 
