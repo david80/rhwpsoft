@@ -1,7 +1,7 @@
 {
   "name": "rhwp-studio",
   "productName": "RHWP STUDIO",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "RHWP STUDIO — Modern HWP/HWPX Document Viewer & Editor",
   "main": "dist-electron/main.cjs",
   "type": "module",
@@ -45,8 +45,8 @@
     "wait-on": "^8.0.2"
   },
   "dependencies": {
-    "@rhwp/core": "^0.8.6",
-    "@rhwp/editor": "^0.8.6"
+    "@rhwp/core": "^0.8.7",
+    "@rhwp/editor": "^0.8.7"
   },
   "build": {
     "appId": "com.rhwp.studio",
@@ -63,11 +63,17 @@
       "target": [
         {
           "target": "dmg",
-          "arch": ["arm64", "x64"]
+          "arch": [
+            "arm64",
+            "x64"
+          ]
         },
         {
           "target": "zip",
-          "arch": ["arm64", "x64"]
+          "arch": [
+            "arm64",
+            "x64"
+          ]
         }
       ],
       "icon": "build/icon.png"
@@ -95,11 +101,15 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         },
         {
           "target": "portable",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "icon": "build/icon.png",
