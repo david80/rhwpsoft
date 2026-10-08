@@ -80,3 +80,22 @@
   - 한국어(KO) 및 영어(EN) 원클릭 토글 지원.
   - 뷰어 모드 / 에디터 모드 실시간 전환.
   - 단축키 안내 및 문서 메타데이터 진단 모달 제공.
+
+---
+
+### [PATCH-006] 업스트림 rhwp v0.8.7 동기화 및 엔진 판올림 (Upstream v0.8.7 Sync)
+- **적용 일자**: 2026-10-08
+- **영향 범위**: `package.json`, `public/rhwp_bg.wasm`, `public/studio/*`, `index.html`, `src/i18n/locales.ts`
+- **업스트림 릴리즈**: [edwardkim/rhwp v0.8.7](https://github.com/edwardkim/rhwp/releases/tag/v0.8.7)
+- **주요 동기화 내역**:
+  1. **npm 패키지 업데이트**: `@rhwp/core@0.8.7`, `@rhwp/editor@0.8.7` 적용.
+  2. **WASM 코어 교체**: v0.8.7 Rust 공식 컴파일 WASM(`rhwp_bg.wasm`, sha256 `54cf9501...`)으로 갱신.
+  3. **Studio 독립 번들 갱신**:
+     - v0.8.7 신규 Studio 웹 번들(`assets/index-zNX2Cct6.js`, `index-CJqHfaJX.css`, `canvaskit-renderer-qwNCZ9x6.js`, `locale-init.js` 등) 탑재.
+     - 오프라인/로컬 완전 독립 환경을 위한 상대 경로(`./`) 및 URL import 패치 적용.
+  4. **조판 및 표 레이아웃 개선사항 반영**:
+     - 문단 안 연속 TAC 표의 저장 줄 소속과 가용 폭, 바깥여백 반영 (#7482, #7585)
+     - rowspan·중첩 표 페이지 분할 안정화 (#7368, #7567, #7570)
+     - 빈 머리말/꼬리말 HWP5 한컴 열기 호환성 및 표 제목 줄 반복 저장 보정 (#7338, #7460)
+     - 입력 안전성 및 fuzz 발견 비정상 경계 방어 강화 (#7263, #7602)
+

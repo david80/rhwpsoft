@@ -6,9 +6,9 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-1.0.0-blue.svg" alt="Version" />
+  <img src="https://img.shields.io/badge/Version-1.0.1-blue.svg" alt="Version" />
   <img src="https://img.shields.io/badge/Platform-Web%20%7C%20Electron%20(macOS%2C%20Windows)-brightgreen.svg" alt="Platform" />
-  <img src="https://img.shields.io/badge/Engine-rhwp%20v0.8.6%20WASM-orange.svg" alt="Engine" />
+  <img src="https://img.shields.io/badge/Engine-rhwp%20v0.8.7%20WASM-orange.svg" alt="Engine" />
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License" />
 </p>
 

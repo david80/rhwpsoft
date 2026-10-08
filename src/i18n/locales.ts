@@ -85,7 +85,7 @@ export const messages: Record<Language, Translations> = {
   ko: {
     brand: {
       title: 'RHWP STUDIO',
-      engineBadge: 'v0.8.6 엔진',
+      engineBadge: 'v0.8.7 엔진',
     },
     mode: {
       viewer: '뷰어 모드',
@@ -166,7 +166,7 @@ export const messages: Record<Language, Translations> = {
   en: {
     brand: {
       title: 'RHWP STUDIO',
-      engineBadge: 'v0.8.6 Engine',
+      engineBadge: 'v0.8.7 Engine',
     },
     mode: {
       viewer: 'Viewer Mode',
