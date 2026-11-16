@@ -10,13 +10,13 @@
   <script src="./theme-init.js"></script>
   <!-- 언어팩: 번들 전에 <html lang> 을 고른 로케일로 — 영어 사용자의 첫 페인트 깜빡임 방지 -->
   <script src="./locale-init.js"></script>
-  <!-- 스마트 서명/직인 렌더링 위치 자동 보정 패치 [PATCH-001 v5] -->
+  <!-- 스마트 서명/직인 렌더링 위치 자동 보정 패치 [PATCH-001 v6] -->
   <script type="module" src="./signature-snap-patch.js"></script>
   <link rel="icon" href="./favicon.ico" />
   <link rel="apple-touch-icon" href="./icons/icon-256.png" />
   <title>rhwp-studio</title>
-  <script type="module" crossorigin src="./assets/index-zNX2Cct6.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-CJqHfaJX.css">
+  <script type="module" crossorigin src="./assets/index-DgYYBpxg.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-heovRvTs.css">
 <link rel="manifest" href="./manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script></head>
 <body>
   <div id="studio-root">
@@ -678,6 +678,7 @@
       <div id="scroll-container" role="region" aria-label="문서 페이지" tabindex="0" data-i18n-aria-label="ui.scrollContainer.ariaLabel">
         <div id="scroll-content"></div>
       </div>
+      <aside id="side-panel-host" hidden></aside>
     </main>
 
     <!-- 하단 상태 바 -->

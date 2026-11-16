@@ -99,3 +99,23 @@
      - 빈 머리말/꼬리말 HWP5 한컴 열기 호환성 및 표 제목 줄 반복 저장 보정 (#7338, #7460)
      - 입력 안전성 및 fuzz 발견 비정상 경계 방어 강화 (#7263, #7602)
 
+---
+
+### [PATCH-007] 업스트림 rhwp v0.9.0 동기화 및 서명 보정 패치 재적용 (Upstream v0.9.0 Sync)
+- **적용 일자**: 2026-11-16
+- **영향 범위**: `package.json`, `public/rhwp_bg.wasm`, `public/studio/*`, `index.html`, `README*.md`, `src/i18n/locales.ts`
+- **업스트림 릴리즈**: [edwardkim/rhwp v0.9.0](https://github.com/edwardkim/rhwp/releases/tag/v0.9.0) (태그 `c9095c5f`)
+- **주요 동기화 내역**:
+  1. **npm 패키지 업데이트**: `@rhwp/core@0.9.0`, `@rhwp/editor@0.9.0` 적용, 앱 버전 1.0.2.
+  2. **WASM 코어 교체**:
+     - `public/rhwp_bg.wasm`: npm `@rhwp/core@0.9.0` 공식 WASM (sha256 `c3b0632b...`).
+     - `public/studio/*`: v0.9.0 호스팅 Studio 빌드 WASM (sha256 `39671924...`, PDF 가져오기 포함). Studio 번들은 자체 JS 글루와 짝이 맞는 이 WASM을 사용.
+  3. **Studio 독립 번들 갱신**:
+     - 신규 번들 `assets/index-DgYYBpxg.js`, `index-heovRvTs.css`, `canvaskit-renderer-Z7SVSenC.js`, PDF `import-worker`, `form-action-worker`, 플러그인 청크 등 탑재 (`canvaskit-SCAxUyCS.wasm`은 동일 해시로 유지).
+     - 신규 글꼴 5종 추가: `RHWPPublicBatang`, `RHWPOldHangul`, `NotoSansMath`, `NotoSansSymbols2`, `LatinModernMath` subset.
+     - 호스팅 빌드의 절대 경로(`/rhwp/`)를 오프라인용 상대 경로로 치환: `index.html`·`registerSW.js`는 `./`, CSS는 `../`, Worker/WASM `new URL(...)`은 모듈 기준 파일명, Vite preload base는 `../`, CanvasKit WASM은 `new URL(..., import.meta.url)`.
+  4. **[PATCH-001 v6] 재적용 및 개선**: WasmBridge 클래스(`Dl`)의 `renderPageToCanvasFiltered`(print 프로파일 분기 포함), `getPageLayerTree`, `getPageFlowImageOps`, `getPageLayerTreeObject`, `getPageOverlayImages`, `getPageControlLayout` 및 CanvasKit 렌더러에 보정 로직 삽입. v0.9.0에서 새로 생긴 `clipPath` 노드도 CanvasKit 순회 대상에 추가.
+     - **v6 변경점 (drawImage 인터셉터)**: v0.9.0 엔진은 회전된 서명 그림을 `setTransform`(90° 회전) 상태에서 가로·세로가 뒤바뀐 크기(65.9×95.6)로 `drawImage` 하므로, 인자 크기·좌표를 직접 비교하던 v5 판정이 빗나가 보정이 적용되지 않았음. v6는 현재 변환 행렬로 그리기 사각형의 네 꼭짓점을 화면 좌표로 변환해 bbox로 판정하고, 일치하면 변환 행렬에 화면 기준 평행이동만 더해 그림 (회전 포함 모든 변환 대응).
+     - **검증 (`public/sample2.hwp` 6쪽)**: v0.9.0도 v0.8.7과 동일하게 서명 그림이 y=393.9(위 '건의사항' 칸)에 배치됨 → 업스트림 미수정 확인. v6 적용 후 Canvas2D에서 서명란 '(인)' 위치(y=511.25)로 이동함을 DPR 1·2에서 확인. 이 문서는 '한양견고딕' 글꼴 준비 실패로 CanvasKit 요청 시에도 Canvas2D로 폴백되므로 CanvasKit 경로는 이 문서로는 검증 불가.
+  5. **업스트림 주요 변경**: PDF → HWP/HWPX 가져오기, 중첩 표·RowBreak·TAC 개체 흐름 보정, 표 칸 그림 삽입/이동, 글상자·머리말/꼬리말 저장 재열기 보존, 메모 API 등.
+- **비고**: #4068(표 셀 부동 그림 4~6px 오차)은 v0.9.0에서 종료됐으나 별개 문제이며, 서명 그림이 위 칸으로 튀는 본 증상은 v0.9.0에서도 재현됨. 업스트림 후속 후보: #9036(서명란 겹침, v0.9.0 이후), #9022(결재 도장 행 높이, 진행 중).
