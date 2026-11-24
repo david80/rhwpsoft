@@ -1,0 +1,61 @@
+--- a/src/renderer/layout/shape_item.inc.rs
++++ b/src/renderer/layout/shape_item.inc.rs
+@@ -255,6 +255,43 @@
+                                     self.dpi,
+                                 )
+                                 .unwrap_or(0.0);
++                            let overlays_text = matches!(
++                                pic.common.text_wrap,
++                                TextWrap::InFrontOfText | TextWrap::BehindText
++                            );
++                            // [#6134] 글상자와 같은 규칙: 앞선 자리차지 표가 있으면 '글 앞으로/글 뒤로' 문단 기준
++                            // 그림의 기준점은 문단 상단이 아니라 표 아래 글줄이다. 자리차지 그림만 있는 문단은
++                            // 문단 상단이 기준이므로(samples/test-image2.hwp) 표의 띠만 더한다.
++                            let pic_y = if overlays_text
++                                && !anchor_starts_on_earlier_page
++                                && pic.common.vert_rel_to == VertRelTo::Para
++                                && pic.common.vert_align == VertAlign::Top
++                            {
++                                pic_y
++                                    + para
++                                        .controls
++                                        .iter()
++                                        .take(control_index)
++                                        .filter_map(|ctrl| match ctrl {
++                                            Control::Table(table)
++                                                if is_para_topbottom_float(&table.common) =>
++                                            {
++                                                Some(
++                                                    hwpunit_to_px(
++                                                        table.common.height as i32,
++                                                        self.dpi,
++                                                    ) + hwpunit_to_px(
++                                                        i32::from(table.common.margin.bottom),
++                                                        self.dpi,
++                                                    ),
++                                                )
++                                            }
++                                            _ => None,
++                                        })
++                                        .sum::<f64>()
++                            } else {
++                                pic_y
++                            };
+                             let saved_y_offset = y_offset;
+                             // [Task #1079] 파일 vpos 가 이미 그림 공간을 반영(그림 para 줄 앞
+                             // gap ≥ 그림 높이)하면 그림 높이 추가 진행 생략(typeset pushdown
+@@ -264,8 +301,12 @@
+                             // gap 은 이미 소비된 공간이라, 그림을 gap 안(base 위)으로
+                             // 올리면 커진 표 하단에 겹친다(셀 Enter 재현: 그림이
+                             // 표 하단 위에 그려짐).
+-                            let vpos_accounts_for_height =
+-                                !self.profile.get().session_edited() && para_index > 0 && {
++                            // '글 앞으로/글 뒤로' 그림은 흐름을 점유하지 않으므로(#347) 저장 vpos gap 이
++                            // 그림 공간일 수 없다.
++                            let vpos_accounts_for_height = !overlays_text
++                                && !self.profile.get().session_edited()
++                                && para_index > 0
++                                && {
+                                     const PUSHDOWN_GAP_TOL_PX: f64 = 8.0;
+                                     let obj_h = hwpunit_to_px(pic.common.height as i32, self.dpi);
+                                     let v_cur = paragraphs[para_index]

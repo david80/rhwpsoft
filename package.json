@@ -1,7 +1,7 @@
 {
   "name": "rhwp-studio",
   "productName": "RHWP STUDIO",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "RHWP STUDIO — Modern HWP/HWPX Document Viewer & Editor",
   "main": "dist-electron/main.cjs",
   "type": "module",

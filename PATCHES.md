@@ -199,3 +199,17 @@
   - **검증**: 화면 y=509.7, 인쇄 y=510.2(표 위끝 기준 +1.2px, 한글 저장값 기준 +1.1px). 표 위에서 Enter 1·2회 시 535.5·561.5, 되돌리기 시 원위치. 60px 위로 끌기 → 449.7, 저장 후 재열기에도 449.7. HWPX 동일. 실제 CanvasKit 백엔드에서 확인. 계산 비용은 쪽당 평균 0.06~0.3ms.
 - **새로고침**: '보기 > 새로고침·강제 새로고침'도 PATCH-011과 같은 미저장 확인을 거침(`requestLeave`로 종료와 공용화).
 - **배포 빌드**: 두 아키텍처의 DMG가 같은 볼륨 이름으로 동시에 마운트되어 충돌하던 문제를 `dmg.title`에 `${arch}`를 넣어 해결. `target`에 arch가 지정돼 무시되던 `--arm64`/`--x64` 옵션은 `dmg:arm64 zip:arm64` 형식으로 바꾸고 `dist:release`의 중복 빌드를 제거.
+
+---
+
+### [PATCH-013] 엔진 수정 빌드: 자리 차지 표와 같은 문단의 떠 있는 그림 위치 (앱 1.0.5)
+- **적용 일자**: 2026-11-24
+- **영향 범위**: `public/studio/rhwp_bg.wasm`, `public/studio/assets/rhwp_bg-1bbbe92f.wasm`(파일명 변경), `assets/index-*.js`·`import-worker-*.js`(WASM 파일명), `patches/rhwp-v0.9.1-floating-picture.patch`, `scripts/build-engine.sh`
+- **내용**: PATCH-001의 엔진 원인을 rhwp v0.9.1 소스(`src/renderer/layout/shape_item.inc.rs`)에서 직접 수정해 WASM을 빌드. 원칙 3(업스트림 릴리즈를 가져옴)의 예외이며, 업스트림에서 고쳐지면 공식 WASM으로 되돌림.
+  1. '글 앞으로/글 뒤로' 그림에는 `vpos_accounts_for_height`(저장 간격을 그림 높이로 보고 위로 올리는 판정)를 적용하지 않음.
+  2. 문단 기준·위쪽 정렬인 '글 앞으로/글 뒤로' 그림은 같은 문단의 앞선 '자리 차지' **표** 높이와 아래 여백만큼 기준을 내림. 업스트림 보조 함수(`preceding_topbottom_band_height_px`, #6134)는 '자리 차지' 그림까지 더해 `samples/test-image2.hwp`의 그림이 이름표를 가리므로 표로 한정.
+- **빌드**: `scripts/build-engine.sh` (crates.io `rhwp` 0.9.1 원본의 SHA-256 확인 → 패치 → Rust 1.93.1, wasm-pack 0.15.0). JS 접착 코드는 공식 배포본과 바이트까지 같아야 통과. 빌드 컴퓨터의 경로는 바이너리에서 제거.
+- **검증**:
+  - 수정하지 않은 빌드는 공식 0.9.1과 쪽별 배치·SVG·인쇄 SVG·레이어 트리가 모두 같음.
+  - 수정한 빌드는 업스트림 샘플 332개(암호 문서 등 처리하지 못한 4개 제외)와 내장 샘플에서 달라진 쪽이 없고, `sample2.hwp` 6쪽만 달라짐. 서명 y: 393.9 → 509.6 (PATCH-001 v8 계산값 509.7). 이에 따라 v8 보정은 이 문서에 적용되지 않음.
+- **비고**: `public/rhwp_bg.wasm`은 앱이 사용하지 않으며 npm 공식 WASM을 유지. PATCH-001 v8은 공식 엔진으로 되돌릴 때를 위해 유지. 업스트림 판올림 시 Studio 번들을 교체하면 이 WASM도 공식본으로 돌아가므로, 새 버전에 맞춰 패치를 다시 적용할지 확인할 것.
