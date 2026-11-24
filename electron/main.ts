@@ -23,17 +23,30 @@ function terminateApp() {
 const CLOSE_ACK_TIMEOUT_MS = 3000;
 let closeHandlerReady = false;
 let closeAckTimer: NodeJS.Timeout | null = null;
+let pendingLeave: () => void = terminateApp;
 
-// 미저장 변경은 렌더러(Studio 확인 대화상자)가 묻는다. 렌더러가 준비되지 않았으면 바로 종료한다.
-function requestQuit() {
+// 미저장 변경은 렌더러(Studio 확인 대화상자)가 묻는다. 렌더러가 준비되지 않았으면 바로 진행한다.
+function requestLeave(action: () => void) {
   if (!mainWindow || mainWindow.isDestroyed() || !closeHandlerReady) {
-    terminateApp();
+    action();
     return;
   }
   if (closeAckTimer) return;
+  pendingLeave = action;
   if (mainWindow.isMinimized()) mainWindow.restore();
-  closeAckTimer = setTimeout(confirmForceQuit, CLOSE_ACK_TIMEOUT_MS);
+  closeAckTimer = setTimeout(confirmForceLeave, CLOSE_ACK_TIMEOUT_MS);
   mainWindow.webContents.send('app:close-request');
+}
+
+function requestQuit() {
+  requestLeave(terminateApp);
+}
+
+function requestReload(ignoreCache: boolean) {
+  requestLeave(() => {
+    if (ignoreCache) mainWindow?.webContents.reloadIgnoringCache();
+    else mainWindow?.webContents.reload();
+  });
 }
 
 function clearCloseAckTimer() {
@@ -42,7 +55,8 @@ function clearCloseAckTimer() {
 }
 
 // 편집기가 응답하지 않아도 앱을 닫을 수 있어야 한다 (PATCH-003)
-async function confirmForceQuit() {
+async function confirmForceLeave() {
+  const action = pendingLeave;
   clearCloseAckTimer();
   if (!mainWindow || mainWindow.isDestroyed()) {
     terminateApp();
@@ -51,21 +65,21 @@ async function confirmForceQuit() {
   const { response } = await dialog.showMessageBox(mainWindow, {
     type: 'warning',
     message: '편집기가 응답하지 않습니다.',
-    detail: '지금 종료하면 저장하지 않은 변경 내용이 사라질 수 있습니다.',
-    buttons: ['기다리기', '종료'],
+    detail: '지금 계속하면 저장하지 않은 변경 내용이 사라질 수 있습니다.',
+    buttons: ['기다리기', action === terminateApp ? '종료' : '새로고침'],
     defaultId: 0,
     cancelId: 0,
   });
-  if (response === 1) terminateApp();
+  if (response === 1) action();
 }
 
 ipcMain.on('app:close-ready', () => {
   closeHandlerReady = true;
 });
 ipcMain.on('app:close-ack', clearCloseAckTimer);
-ipcMain.on('app:close-reply', (_event, reply: 'quit' | 'stay' | 'error') => {
-  if (reply === 'quit') terminateApp();
-  else if (reply === 'error') confirmForceQuit();
+ipcMain.on('app:close-reply', (_event, reply: 'leave' | 'stay' | 'error') => {
+  if (reply === 'leave') pendingLeave();
+  else if (reply === 'error') confirmForceLeave();
 });
 
 function startLocalServer(): Promise<number> {
@@ -285,8 +299,8 @@ function setupAppMenu() {
           click: () => mainWindow?.webContents.send('menu:action', 'toggle-mode'),
         },
         { type: 'separator' },
-        { role: 'reload', label: '새로고침' },
-        { role: 'forceReload', label: '강제 새로고침' },
+        { label: '새로고침', accelerator: 'CmdOrCtrl+R', click: () => requestReload(false) },
+        { label: '강제 새로고침', accelerator: 'CmdOrCtrl+Shift+R', click: () => requestReload(true) },
         { role: 'toggleDevTools', label: '개발자 도구 전환' },
         { type: 'separator' },
         { role: 'resetZoom', label: '실제 크기' },

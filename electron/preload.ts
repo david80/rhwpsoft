@@ -29,7 +29,7 @@ const electronAPI: ElectronAPI = {
     ipcRenderer.on('app:close-request', async () => {
       ipcRenderer.send('app:close-ack');
       try {
-        ipcRenderer.send('app:close-reply', (await callback()) ? 'quit' : 'stay');
+        ipcRenderer.send('app:close-reply', (await callback()) ? 'leave' : 'stay');
       } catch (error) {
         console.error('Close confirmation error:', error);
         ipcRenderer.send('app:close-reply', 'error');

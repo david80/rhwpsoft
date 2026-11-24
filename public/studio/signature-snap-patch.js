@@ -1,5 +1,5 @@
 /**
- * RHWP STUDIO - Smart Signature & Stamp Alignment Patch [PATCH-001 v6]
+ * RHWP STUDIO - Smart Signature & Stamp Alignment Patch [PATCH-001 v8]
  *
  * 이 패치는 오픈소스 rhwp 조판 엔진(v0.8.6~v0.9.1)에서 테이블과 동일 문단에 속한
  * 부유형(floating) 서명/직인 이미지가 상단 블록으로 치솟는 레이아웃 오차를
@@ -10,5 +10,5 @@
  */
 
 (function () {
-  console.info('[RHWP STUDIO] Smart Signature & Stamp Alignment Patch [PATCH-001 v6] Active.');
+  console.info('[RHWP STUDIO] Smart Signature & Stamp Alignment Patch [PATCH-001 v8] Active.');
 })();

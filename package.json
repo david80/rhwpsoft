@@ -1,7 +1,7 @@
 {
   "name": "rhwp-studio",
   "productName": "RHWP STUDIO",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "RHWP STUDIO — Modern HWP/HWPX Document Viewer & Editor",
   "main": "dist-electron/main.cjs",
   "type": "module",
@@ -13,14 +13,14 @@
     "electron:dev": "concurrently -k \"vite --port 7788\" \"cross-env NODE_ENV=development wait-on tcp:7788 && npm run build:electron-main && electron dist-electron/main.cjs\"",
     "electron:start": "npm run build:electron-main && electron dist-electron/main.cjs",
     "dist:mac": "npm run build && npm run build:electron-main && electron-builder --mac",
-    "dist:mac:arm64": "npm run build && npm run build:electron-main && electron-builder --mac --arm64",
-    "dist:mac:x64": "npm run build && npm run build:electron-main && electron-builder --mac --x64",
+    "dist:mac:arm64": "npm run build && npm run build:electron-main && electron-builder --mac dmg:arm64 zip:arm64",
+    "dist:mac:x64": "npm run build && npm run build:electron-main && electron-builder --mac dmg:x64 zip:x64",
     "dist:mac:universal": "npm run build && npm run build:electron-main && electron-builder --mac --universal",
     "dist:win": "npm run build && npm run build:electron-main && electron-builder --win",
     "dist:win:x64": "npm run build && npm run build:electron-main && electron-builder --win --x64",
     "dist:all": "npm run build && npm run build:electron-main && electron-builder -mw",
     "electron:build": "npm run dist:all",
-    "dist:release": "npm run build && npm run build:electron-main && electron-builder --mac --arm64 && electron-builder --mac --x64 && electron-builder --win --x64"
+    "dist:release": "npm run build && npm run build:electron-main && electron-builder --mac && electron-builder --win --x64"
   },
   "keywords": [
     "hwp",
@@ -79,7 +79,7 @@
       "icon": "build/icon.png"
     },
     "dmg": {
-      "title": "RHWP STUDIO ${version}",
+      "title": "RHWP STUDIO ${version}${arch}",
       "contents": [
         {
           "x": 130,
