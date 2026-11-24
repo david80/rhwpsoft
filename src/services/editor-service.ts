@@ -13,6 +13,8 @@ interface StudioHost {
     currentFileHandle: StudioFileHandle | null;
   };
   events: { on(event: string, listener: () => void): () => void };
+  /** 미저장 변경이 있으면 저장/저장 안 함/취소를 묻는다. 계속 진행해도 되면 true */
+  confirmUnsaved(): Promise<boolean>;
 }
 
 export class EditorService {
@@ -21,11 +23,11 @@ export class EditorService {
   private containerEl: HTMLElement | null = null;
   private currentMode: AppMode = 'editor';
   private currentFileName = '';
-  private currentFileBytes: Uint8Array | null = null;
   private totalPages = 1;
   private currentPage = 1;
   private currentZoom = 100;
   private documentOpened = false;
+  private confirmingUnsaved = false;
 
   private onStateChangeListeners: Array<() => void> = [];
 
@@ -164,6 +166,23 @@ export class EditorService {
     }
   }
 
+  /** 문서를 교체하거나 앱을 닫기 전에 미저장 변경을 확인한다. */
+  async confirmUnsaved(): Promise<boolean> {
+    const host = this.getStudioHost();
+    if (!this.editor || !host) return true;
+    if (this.confirmingUnsaved) return false; // 이미 확인 대화상자가 떠 있음
+
+    this.confirmingUnsaved = true;
+    try {
+      const context = await this.editor.commands.context();
+      if (!context.isDirty) return true;
+      this.notifyStateChange(); // 대화상자는 Studio 안에 뜨므로 편집 화면을 보여 준다
+      return await host.confirmUnsaved();
+    } finally {
+      this.confirmingUnsaved = false;
+    }
+  }
+
   async loadDocument(data: Uint8Array | ArrayBuffer, fileName: string, filePath?: string): Promise<boolean> {
     if (!this.editor && this.containerEl) {
       await this.initialize(this.containerEl);
@@ -175,10 +194,10 @@ export class EditorService {
     }
 
     try {
-      this.currentFileName = fileName;
-      this.currentFileBytes = data instanceof Uint8Array ? data : new Uint8Array(data);
+      if (!(await this.confirmUnsaved())) return false;
 
-      const result = await this.editor.loadFile(this.currentFileBytes, fileName, {
+      const bytes = data instanceof Uint8Array ? data : new Uint8Array(data);
+      const result = await this.editor.loadFile(bytes, fileName, {
         suppressDialogs: true,
         skipUnsavedGuard: true,
       });
@@ -191,6 +210,7 @@ export class EditorService {
       }
 
       this.documentOpened = true;
+      this.currentFileName = fileName;
       this.totalPages = result.pageCount || (await this.editor.pageCount()) || 1;
       this.currentPage = 1;
 

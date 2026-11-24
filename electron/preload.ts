@@ -8,6 +8,7 @@ export interface ElectronAPI {
   readFile: (filePath: string) => Promise<{ fileData: Uint8Array; fileName: string }>;
   getPathForFile: (file: File) => string;
   onMenuAction: (callback: (action: string) => void) => () => void;
+  onCloseRequest: (callback: () => Promise<boolean>) => void;
   openExternal: (url: string) => Promise<void>;
   getTitle: () => string;
 }
@@ -23,6 +24,18 @@ const electronAPI: ElectronAPI = {
     const handler = (_event: Electron.IpcRendererEvent, action: string) => callback(action);
     ipcRenderer.on('menu:action', handler);
     return () => ipcRenderer.removeListener('menu:action', handler);
+  },
+  onCloseRequest: (callback) => {
+    ipcRenderer.on('app:close-request', async () => {
+      ipcRenderer.send('app:close-ack');
+      try {
+        ipcRenderer.send('app:close-reply', (await callback()) ? 'quit' : 'stay');
+      } catch (error) {
+        console.error('Close confirmation error:', error);
+        ipcRenderer.send('app:close-reply', 'error');
+      }
+    });
+    ipcRenderer.send('app:close-ready');
   },
   openExternal: (url) => ipcRenderer.invoke('app:openExternal', url),
   getTitle: () => 'RHWP STUDIO',

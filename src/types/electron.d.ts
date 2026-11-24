@@ -6,6 +6,7 @@ export interface ElectronAPI {
   readFile: (filePath: string) => Promise<{ fileData: Uint8Array; fileName: string }>;
   getPathForFile: (file: File) => string;
   onMenuAction: (callback: (action: string) => void) => () => void;
+  onCloseRequest: (callback: () => Promise<boolean>) => void;
   openExternal: (url: string) => Promise<void>;
   getTitle: () => string;
 }

@@ -225,6 +225,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
+  // 앱 종료 전 미저장 변경 확인
+  window.electronAPI?.onCloseRequest(() => editorService.confirmUnsaved());
+
   // Pre-initialize Editor in the background
   try {
     statusIndicatorDot.classList.add('busy');
@@ -387,9 +390,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (['hwp', 'hwpx', 'hml'].includes(ext || '')) {
         statusIndicatorDot.classList.add('busy');
         statusText.textContent = i18n.t().statusbar.loading;
-        await FileService.loadBrowserFile(file);
+        const success = await FileService.loadBrowserFile(file);
         statusIndicatorDot.classList.remove('busy');
-        statusText.textContent = i18n.t().statusbar.docOpened;
+        statusText.textContent = success ? i18n.t().statusbar.docOpened : i18n.t().statusbar.ready;
       } else {
         ToastService.error(i18n.t().toasts.onlyHwpAllowed);
       }

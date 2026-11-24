@@ -20,6 +20,54 @@ function terminateApp() {
   app.exit(0);
 }
 
+const CLOSE_ACK_TIMEOUT_MS = 3000;
+let closeHandlerReady = false;
+let closeAckTimer: NodeJS.Timeout | null = null;
+
+// 미저장 변경은 렌더러(Studio 확인 대화상자)가 묻는다. 렌더러가 준비되지 않았으면 바로 종료한다.
+function requestQuit() {
+  if (!mainWindow || mainWindow.isDestroyed() || !closeHandlerReady) {
+    terminateApp();
+    return;
+  }
+  if (closeAckTimer) return;
+  if (mainWindow.isMinimized()) mainWindow.restore();
+  closeAckTimer = setTimeout(confirmForceQuit, CLOSE_ACK_TIMEOUT_MS);
+  mainWindow.webContents.send('app:close-request');
+}
+
+function clearCloseAckTimer() {
+  if (closeAckTimer) clearTimeout(closeAckTimer);
+  closeAckTimer = null;
+}
+
+// 편집기가 응답하지 않아도 앱을 닫을 수 있어야 한다 (PATCH-003)
+async function confirmForceQuit() {
+  clearCloseAckTimer();
+  if (!mainWindow || mainWindow.isDestroyed()) {
+    terminateApp();
+    return;
+  }
+  const { response } = await dialog.showMessageBox(mainWindow, {
+    type: 'warning',
+    message: '편집기가 응답하지 않습니다.',
+    detail: '지금 종료하면 저장하지 않은 변경 내용이 사라질 수 있습니다.',
+    buttons: ['기다리기', '종료'],
+    defaultId: 0,
+    cancelId: 0,
+  });
+  if (response === 1) terminateApp();
+}
+
+ipcMain.on('app:close-ready', () => {
+  closeHandlerReady = true;
+});
+ipcMain.on('app:close-ack', clearCloseAckTimer);
+ipcMain.on('app:close-reply', (_event, reply: 'quit' | 'stay' | 'error') => {
+  if (reply === 'quit') terminateApp();
+  else if (reply === 'error') confirmForceQuit();
+});
+
 function startLocalServer(): Promise<number> {
   return new Promise((resolve, reject) => {
     const distPath = path.join(__dirname, '../dist');
@@ -134,9 +182,18 @@ async function createWindow() {
     }
   }
 
-  // 창 닫기 시 즉시 종료
-  mainWindow.on('close', () => {
-    terminateApp();
+  // 페이지를 다시 불러오거나 렌더러가 죽으면 종료 확인 핸들러도 사라진다
+  mainWindow.webContents.on('did-start-navigation', (details) => {
+    if (details.isMainFrame && !details.isSameDocument) closeHandlerReady = false;
+  });
+  mainWindow.webContents.on('render-process-gone', () => {
+    closeHandlerReady = false;
+  });
+
+  // 창 닫기 시 미저장 변경을 확인하고 종료
+  mainWindow.on('close', (event) => {
+    event.preventDefault();
+    requestQuit();
   });
 
   mainWindow.on('closed', () => {
@@ -166,7 +223,7 @@ function setupAppMenu() {
               {
                 label: 'RHWP STUDIO 종료',
                 accelerator: 'CmdOrCtrl+Q',
-                click: () => terminateApp(),
+                click: () => requestQuit(),
               },
             ],
           },
@@ -206,7 +263,7 @@ function setupAppMenu() {
         {
           label: '종료',
           accelerator: isMac ? 'Cmd+Q' : 'Alt+F4',
-          click: () => terminateApp(),
+          click: () => requestQuit(),
         },
       ],
     },
