@@ -119,3 +119,56 @@
      - **검증 (`public/sample2.hwp` 6쪽)**: v0.9.0도 v0.8.7과 동일하게 서명 그림이 y=393.9(위 '건의사항' 칸)에 배치됨 → 업스트림 미수정 확인. v6 적용 후 Canvas2D에서 서명란 '(인)' 위치(y=511.25)로 이동함을 DPR 1·2에서 확인. 이 문서는 '한양견고딕' 글꼴 준비 실패로 CanvasKit 요청 시에도 Canvas2D로 폴백되므로 CanvasKit 경로는 이 문서로는 검증 불가.
   5. **업스트림 주요 변경**: PDF → HWP/HWPX 가져오기, 중첩 표·RowBreak·TAC 개체 흐름 보정, 표 칸 그림 삽입/이동, 글상자·머리말/꼬리말 저장 재열기 보존, 메모 API 등.
 - **비고**: #4068(표 셀 부동 그림 4~6px 오차)은 v0.9.0에서 종료됐으나 별개 문제이며, 서명 그림이 위 칸으로 튀는 본 증상은 v0.9.0에서도 재현됨. 업스트림 후속 후보: #9036(서명란 겹침, v0.9.0 이후), #9022(결재 도장 행 높이, 진행 중).
+
+---
+
+### [PATCH-008] 업스트림 rhwp v0.9.1 동기화 및 첫 화면 로드 회귀 대응 (Upstream v0.9.1 Sync)
+- **적용 일자**: 2026-11-24
+- **영향 범위**: `package.json`, `public/rhwp_bg.wasm`, `public/studio/*`, `index.html`, `src/main.ts`, `src/styles/app.css`, `README*.md`, `src/i18n/locales.ts`
+- **업스트림 릴리즈**: [edwardkim/rhwp v0.9.1](https://github.com/edwardkim/rhwp/releases/tag/v0.9.1) (태그 `981ce66b`, 호스팅 Studio 배포 커밋과 동일)
+- **주요 동기화 내역**:
+  1. **npm 패키지 업데이트**: `@rhwp/core@0.9.1`, `@rhwp/editor@0.9.1` 적용, 앱 버전 1.0.3.
+  2. **WASM 코어 교체**: npm과 호스팅 Studio의 WASM이 동일(sha256 `e2e56dfd...`)하여 `public/rhwp_bg.wasm`과 `public/studio/*` 모두 같은 파일 사용.
+  3. **Studio 독립 번들 갱신**: `assets/index-DJJqHHQc.js`, `index-D8P2zhVp.css`, `canvaskit-renderer-D32O9pl0.js`, `import-worker-ENBcDEGf.js` 등 교체. 절대 경로(`/rhwp/`) 치환 규칙은 PATCH-007과 동일하며, `import-worker`의 WASM 경로도 파일명 기준으로 치환.
+  4. **글꼴 동기화**: 나눔·D2Coding·LatinModernMath 계열 11종이 v0.9.1 태그의 `assets/fonts`와 달라 공식본으로 교체 (기존본은 2026-09-29 최초 도입분).
+  5. **[PATCH-001 v6] 재적용**: WasmBridge 클래스(`Ml`) 및 CanvasKit 렌더러에 동일 지점 삽입. v0.9.1의 `withHostPageFonts` 경로를 유지한 채 감쌈.
+     - **보정값 캐시를 문서 단위로 한정**: 다른 문서를 먼저 연 뒤 서명 문서를 열면 쪽 번호만으로 저장된 이전 문서의 보정값이 재사용되어 보정이 빠지는 회귀를 확인(v0.9.0 번들에서는 같은 순서로 재현되지 않음). `_sigDoc`이 현재 문서와 다르면 캐시를 버리도록 수정.
+- **앱 셸 회귀 대응**: v0.9.1은 첫 페이지가 실제로 그려지지 않으면 문서 열기를 실패로 처리(#9170). 시작 화면에서 `.editor-container`가 `display: none`이라 iframe 크기가 0이 되어 **모든 문서 열기가 실패**함.
+  - `display: none` 대신 `position: absolute` + `visibility: hidden`으로 숨겨 iframe 크기를 유지.
+  - 이로 인해 숨겨진 iframe이 포커스를 가져가 시작 화면 단축키(Cmd/Ctrl+O 등)가 동작하지 않으므로, 시작 화면인 동안 `window` blur 시 포커스를 되돌림 (`src/main.ts`).
+- **검증**: `sample2.hwp` 6쪽에서 v0.9.1 엔진도 서명 그림을 y=393.9에 배치 → 업스트림 미수정 확인. 보정 후 y=511 (DPR 1·2, 다른 문서를 먼저 연 경우 포함). HWP로 내보낸 파일의 좌표는 393.9로 원본 유지. 내장 샘플 14종 열기, HWP/HWPX 내보내기를 외부 네트워크 차단 상태에서 확인. CanvasKit은 모듈·WASM 로딩까지만 확인.
+- **알려진 한계 (v0.9.0과 동일)**: 서명이 있는 쪽을 편집해 표가 이동하면 보정값이 갱신되지 않아 서명이 표를 따라가지 못함.
+
+---
+
+### [PATCH-009] 데스크톱 앱 복사·붙여넣기 미동작 수정 (Clipboard)
+- **적용 일자**: 2026-11-24
+- **영향 범위**: `electron/main.ts`, `public/studio/index.html`
+- **문제 원인**:
+  1. **단축키**: macOS는 Cmd+X/C/V를 앱 메뉴의 role을 통해 `cut`/`copy`/`paste` 이벤트로 전달하는데, 커스텀 앱 메뉴에 편집 role이 하나도 없어 이벤트가 발생하지 않음.
+  2. **편집 메뉴·우클릭 '붙이기'**: Studio가 사용하는 `document.execCommand('paste')`를 Electron이 기본 차단.
+  3. **툴바 오려두기·복사하기·붙이기**: 업스트림 `index.html`의 세 버튼에 `data-cmd`가 없어 명령이 연결되지 않음.
+- **조치 사항**:
+  - 앱 메뉴에 '편집'(`cut`·`copy`·`paste` role) 추가.
+  - `webPreferences.enableDeprecatedPaste: true` 적용.
+  - 툴바 세 버튼에 `data-cmd="edit:cut|copy|paste"` 추가 (**Studio 번들 갱신 시 재적용 필요**).
+- **비고**: 웹 브라우저에서는 보안 정책상 `execCommand('paste')`가 막혀 메뉴·툴바 '붙이기'는 동작하지 않으며 단축키(Ctrl/Cmd+V)를 사용해야 함.
+
+---
+
+### [PATCH-010] 저장 시 원본 덮어쓰기 및 새 문서 수정 (Save in place / New Document)
+- **적용 일자**: 2026-11-24
+- **영향 범위**: `public/studio/assets/index-*.js`(1줄), `src/services/electron-file-handle.ts`(신규), `src/services/editor-service.ts`, `src/services/file-service.ts`, `src/main.ts`, `src/types/electron.d.ts`, `electron/main.ts`, `electron/preload.ts`
+- **문제 원인**:
+  1. **저장**: Studio의 저장은 `currentFileHandle`이 있으면 같은 파일에 쓰고 없으면 위치를 묻는데, 앱이 문서를 열 때 경로를 넘기지 않았고 앱의 저장 메뉴도 항상 저장 대화상자를 띄움. HWPX를 열어도 HWP로만 저장함.
+  2. **새 문서**: 존재하지 않는 명령 `file:new`를 호출함(Studio 명령은 `file:new-doc`).
+- **조치 사항**:
+  - 번들의 `var Y=new Ml;Nl(Y);var X=new Pl,aL=new XN(X);` 뒤에 `window.__rhwpHost={wasm:Y,events:X};`를 추가해 앱 셸이 현재 문서와 이벤트를 읽도록 함 (**Studio 번들 갱신 시 재적용 필요**).
+  - 데스크톱에서 연 파일(열기·끌어 놓기) 경로를 파일 핸들로 감싸 `currentFileHandle`에 지정. 저장 메뉴·단축키·Studio 메뉴·저장 확인 대화상자가 모두 같은 파일에 원래 형식으로 덮어씀.
+  - 경로가 없는 문서는 Electron 저장 대화상자로 한 번 묻고 이후 덮어씀. 쓰기에 실패하면 오류를 알리고 미저장 상태를 유지.
+  - 새 문서는 `file:new-doc`을 호출하고, 미저장 변경이 있으면 Studio의 확인 대화상자(저장 / 저장 안 함 / 취소)를 사용. 문서가 실제로 바뀐 뒤(`document-swapped`) 앱의 파일명·쪽수를 갱신.
+- **검증 (Electron 35, 저장 대화상자 호출 횟수와 디스크 파일 비교)**: HWP·HWPX 덮어쓰기, 새 문서의 저장/저장 안 함/취소, 새 문서 첫 저장과 재저장, 읽기 전용 파일, Studio가 자체로 연 문서가 이전 파일을 덮지 않음 등 19개 항목 통과. 내장 샘플 등 14개 문서를 저장 후 다시 열어 쪽수·본문 텍스트·개체 수 일치 확인.
+- **비고**:
+  - '내보내기' 메뉴는 형식을 골라 다른 파일로 저장하는 용도이므로 기존처럼 위치를 물음.
+  - HML은 업스트림이 원본 보호를 위해 첫 저장에서 위치를 물음.
+  - 앱의 '파일 열기'는 미저장 변경을 확인하지 않고 문서를 교체하며(`skipUnsavedGuard`), 앱 종료도 확인 없이 진행됨(PATCH-003). 이번에 변경하지 않음.

@@ -107,6 +107,8 @@ async function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       webSecurity: false,
+      // Studio의 편집 메뉴·우클릭·툴바 '붙이기'가 execCommand('paste')를 사용한다
+      enableDeprecatedPaste: true,
     },
   });
 
@@ -185,9 +187,9 @@ function setupAppMenu() {
         },
         { type: 'separator' },
         {
-          label: '저장 (HWP)',
+          label: '저장',
           accelerator: 'CmdOrCtrl+S',
-          click: () => mainWindow?.webContents.send('menu:action', 'save-hwp'),
+          click: () => mainWindow?.webContents.send('menu:action', 'save'),
         },
         {
           label: '다른 이름으로 저장...',
@@ -206,6 +208,15 @@ function setupAppMenu() {
           accelerator: isMac ? 'Cmd+Q' : 'Alt+F4',
           click: () => terminateApp(),
         },
+      ],
+    },
+    {
+      // macOS는 메뉴 role이 있어야 Cmd+X/C/V가 copy/paste 이벤트로 전달된다
+      label: '편집',
+      submenu: [
+        { role: 'cut', label: '오려 두기' },
+        { role: 'copy', label: '복사하기' },
+        { role: 'paste', label: '붙이기' },
       ],
     },
     {

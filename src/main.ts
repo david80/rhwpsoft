@@ -214,6 +214,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateUIState();
   });
 
+  // 시작 화면에서는 숨겨진 에디터 iframe이 포커스(전역 단축키)를 가져가지 않도록 되돌린다
+  window.addEventListener('blur', () => {
+    setTimeout(() => {
+      if (editorContainer.classList.contains('active')) return;
+      if (document.activeElement instanceof HTMLIFrameElement) {
+        document.activeElement.blur();
+        window.focus();
+      }
+    });
+  });
+
   // Pre-initialize Editor in the background
   try {
     statusIndicatorDot.classList.add('busy');
@@ -259,9 +270,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function createNew() {
     statusIndicatorDot.classList.add('busy');
     statusText.textContent = i18n.t().statusbar.loading;
-    await editorService.createNewDocument();
+    const created = await editorService.createNewDocument();
     statusIndicatorDot.classList.remove('busy');
-    statusText.textContent = i18n.t().statusbar.newDocReady;
+    statusText.textContent = created ? i18n.t().statusbar.newDocReady : i18n.t().statusbar.ready;
   }
   btnNewDoc.addEventListener('click', createNew);
   btnWelcomeNew.addEventListener('click', createNew);
@@ -394,7 +405,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       FileService.openFile();
     } else if (isCmdOrCtrl && e.key.toLowerCase() === 's') {
       e.preventDefault();
-      FileService.saveFile('hwp');
+      FileService.save();
     } else if (isCmdOrCtrl && e.key.toLowerCase() === 'n') {
       e.preventDefault();
       createNew();
@@ -418,8 +429,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         case 'open-file':
           FileService.openFile();
           break;
-        case 'save-hwp':
-          FileService.saveFile('hwp');
+        case 'save':
+          FileService.save();
           break;
         case 'export-menu':
           exportMenu.classList.add('show');

@@ -4,6 +4,7 @@ export interface ElectronAPI {
   saveFileDialog: (defaultName: string, extensions: string[]) => Promise<{ canceled: boolean; filePath?: string }>;
   writeFile: (filePath: string, buffer: Uint8Array) => Promise<boolean>;
   readFile: (filePath: string) => Promise<{ fileData: Uint8Array; fileName: string }>;
+  getPathForFile: (file: File) => string;
   onMenuAction: (callback: (action: string) => void) => () => void;
   openExternal: (url: string) => Promise<void>;
   getTitle: () => string;

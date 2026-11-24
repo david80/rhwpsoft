@@ -15,7 +15,7 @@ export class FileService {
         const res = await window.electronAPI.openFileDialog();
         if (res.canceled || !res.fileData || !res.fileName) return false;
 
-        const success = await this.editorService.loadDocument(res.fileData, res.fileName);
+        const success = await this.editorService.loadDocument(res.fileData, res.fileName, res.filePath);
         if (success) {
           HistoryStore.addRecentDoc(res.fileName, res.fileData.byteLength);
         }
@@ -48,7 +48,8 @@ export class FileService {
     try {
       const buffer = await file.arrayBuffer();
       const uint8 = new Uint8Array(buffer);
-      const success = await this.editorService.loadDocument(uint8, file.name);
+      const filePath = window.electronAPI?.getPathForFile(file) || undefined;
+      const success = await this.editorService.loadDocument(uint8, file.name, filePath);
       if (success) {
         HistoryStore.addRecentDoc(file.name, file.size);
       }
@@ -76,6 +77,12 @@ export class FileService {
       ToastService.error('샘플 문서 로드에 실패했습니다.');
       return false;
     }
+  }
+
+  /** 저장: 데스크톱에서는 연 파일에 원래 형식으로 덮어쓰고, 경로가 없으면 저장 위치를 묻는다. */
+  static async save(): Promise<boolean> {
+    if (this.isElectron()) return this.editorService.executeCommand('file:save');
+    return this.saveFile('hwp');
   }
 
   static async saveFile(format: 'hwp' | 'hwpx' | 'hml' | 'svg' = 'hwp'): Promise<boolean> {

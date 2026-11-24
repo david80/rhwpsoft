@@ -1,7 +1,19 @@
 import { createStudio, type RhwpEditor } from '@rhwp/editor';
 import { ToastService } from './toast-service';
+import { createElectronFileHandle, installElectronSavePicker, type StudioFileHandle } from './electron-file-handle';
 
 export type AppMode = 'viewer' | 'editor';
+
+/** Studio 번들이 노출하는 앱 셸 연동 지점 [PATCH-010] */
+interface StudioHost {
+  wasm: {
+    readonly fileName: string;
+    readonly pageCount: number;
+    readonly isNewDocument: boolean;
+    currentFileHandle: StudioFileHandle | null;
+  };
+  events: { on(event: string, listener: () => void): () => void };
+}
 
 export class EditorService {
   private static instance: EditorService | null = null;
@@ -13,6 +25,7 @@ export class EditorService {
   private totalPages = 1;
   private currentPage = 1;
   private currentZoom = 100;
+  private documentOpened = false;
 
   private onStateChangeListeners: Array<() => void> = [];
 
@@ -45,6 +58,8 @@ export class EditorService {
         },
       });
 
+      this.connectStudioHost();
+
       // 에디터 생성 완료 후 초기 모드 반영
       await this.applyMode(this.currentMode);
 
@@ -54,6 +69,26 @@ export class EditorService {
       ToastService.error('한글 에디터 엔진을 초기화하는 중 오류가 발생했습니다.');
       throw error;
     }
+  }
+
+  private getStudioHost(): StudioHost | null {
+    const win = this.editor?.element.contentWindow as (Window & { __rhwpHost?: StudioHost }) | null | undefined;
+    return win?.__rhwpHost ?? null;
+  }
+
+  private connectStudioHost() {
+    const studioWindow = this.editor?.element.contentWindow;
+    if (window.electronAPI && studioWindow) installElectronSavePicker(studioWindow);
+
+    const host = this.getStudioHost();
+    host?.events.on('document-swapped', () => {
+      this.currentFileName = host.wasm.fileName;
+      this.totalPages = host.wasm.pageCount;
+      this.currentPage = 1;
+      if (!this.documentOpened) return; // 시작 시 자동으로 만들어지는 빈 문서
+      this.notifyStateChange();
+      if (host.wasm.isNewDocument) ToastService.success('새 한글 문서가 생성되었습니다.');
+    });
   }
 
   getEditor(): RhwpEditor | null {
@@ -129,7 +164,7 @@ export class EditorService {
     }
   }
 
-  async loadDocument(data: Uint8Array | ArrayBuffer, fileName: string): Promise<boolean> {
+  async loadDocument(data: Uint8Array | ArrayBuffer, fileName: string, filePath?: string): Promise<boolean> {
     if (!this.editor && this.containerEl) {
       await this.initialize(this.containerEl);
     }
@@ -148,6 +183,14 @@ export class EditorService {
         skipUnsavedGuard: true,
       });
 
+      // 저장 시 같은 경로에 덮어쓰도록 Studio에 파일 위치를 알린다
+      const host = this.getStudioHost();
+      const studioWindow = this.editor.element.contentWindow;
+      if (filePath && host && studioWindow && host.wasm.fileName === fileName) {
+        host.wasm.currentFileHandle = createElectronFileHandle(filePath, studioWindow);
+      }
+
+      this.documentOpened = true;
       this.totalPages = result.pageCount || (await this.editor.pageCount()) || 1;
       this.currentPage = 1;
 
@@ -167,15 +210,14 @@ export class EditorService {
     }
 
     try {
-      if (this.editor?.commands) {
-        await this.editor.commands.execute('file:new');
-      }
-      this.currentFileName = '새 문서.hwp';
-      this.totalPages = 1;
-      this.currentPage = 1;
+      // 미저장 확인 대화상자는 Studio 안에 뜨므로 편집 화면을 먼저 보여 준다.
+      // 문서가 실제로 바뀌면 document-swapped에서 상태를 갱신한다.
+      this.documentOpened = true;
       this.notifyStateChange();
-      ToastService.success('새 한글 문서가 생성되었습니다.');
-      return true;
+      const context = await this.editor!.commands.context();
+      const res = await this.editor!.commands.execute('file:new-doc', undefined, { allowDialog: true });
+      if (!res.ok) throw new Error('file:new-doc 실행 실패');
+      return !context.isDirty;
     } catch (error) {
       console.error('Failed to create new doc:', error);
       ToastService.error('새 문서 생성 실패');
