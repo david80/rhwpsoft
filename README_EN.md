@@ -115,12 +115,12 @@ All outputs are created in the **`release/`** directory.
 
 ---
 
-## 🔏 Code Signing & Security Setup
+## 🔏 Security Warnings During Installation
 
-Scripts are provided to bypass OS security warnings without paid developer certificates.
+The installers are not signed with a paid certificate, so the OS shows a warning. Check that you downloaded the file from [GitHub Releases](https://github.com/david80/rhwpsoft/releases) before you continue.
 
 ### 🍎 macOS ("Unidentified Developer" Bypass)
-Permanently remove the quarantine attribute:
+Remove the quarantine attribute:
 ```bash
 ./scripts/fix-macos-quarantine.sh
 ```
@@ -129,13 +129,10 @@ Or manually:
 xattr -cr "/Applications/RHWP STUDIO.app"
 ```
 
-### 🪟 Windows (SmartScreen Bypass & Certificate Installation)
-1. **Generate Self-Signed Certificate**:
-   ```bash
-   ./scripts/create-self-signed-cert.sh
-   ```
-2. **Install Certificate into Windows Trusted Root Store**:
-   - Right-click `scripts/install-cert-windows.bat` and select **[Run as Administrator]**.
+### 🪟 Windows (SmartScreen)
+Click **More info**, then **Run anyway**. You do not need to install a certificate.
+
+> ⚠️ If you ever ran `install-cert-windows.bat`, remove the certificate it installed. See the [security notice](SECURITY.md#english).
 
 ---
 

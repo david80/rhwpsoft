@@ -159,12 +159,12 @@ npm run dist:all
 
 ---
 
-## 🔏 미서명 설치 파일 자동 서명 & 보안 경고 해결
+## 🔏 설치할 때 나오는 보안 경고
 
-자체 서명(Self-Signed) 및 OS별 보안 경고를 원클릭으로 해결할 수 있는 스크립트를 제공합니다.
+설치 파일은 유료 코드 서명을 하지 않아 OS가 경고를 표시합니다. [GitHub 릴리즈](https://github.com/david80/rhwpsoft/releases)에서 받은 파일인지 확인한 뒤 진행해 주세요.
 
 ### 🍎 macOS ("확인되지 않은 개발자" 경고 해제)
-macOS 격리 속성(Quarantine)을 원클릭으로 영구 해제합니다:
+macOS 격리 속성(Quarantine)을 해제합니다:
 ```bash
 ./scripts/fix-macos-quarantine.sh
 ```
@@ -173,13 +173,10 @@ macOS 격리 속성(Quarantine)을 원클릭으로 영구 해제합니다:
 xattr -cr "/Applications/RHWP STUDIO.app"
 ```
 
-### 🪟 Windows (SmartScreen 경고 해제 및 인증서 자동 등록)
-1. **자체 서명 인증서 생성**:
-   ```bash
-   ./scripts/create-self-signed-cert.sh
-   ```
-2. **Windows 시스템 루트 인증서 자동 등록**:
-   - `scripts/install-cert-windows.bat` 파일을 마우스 우클릭 후 **[관리자 권한으로 실행]**하면 SmartScreen 경고 없이 신뢰된 소프트웨어로 자동 실행됩니다.
+### 🪟 Windows (SmartScreen 경고)
+**[추가 정보]** 를 누른 뒤 **[실행]** 을 선택합니다. 인증서를 등록할 필요는 없습니다.
+
+> ⚠️ 예전에 `install-cert-windows.bat`을 실행했다면 등록된 인증서를 제거해 주세요. 방법은 [보안 공지](SECURITY.md)에 있습니다.
 
 ---
 

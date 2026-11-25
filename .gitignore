@@ -13,3 +13,12 @@ release/
 
 # Temporary files
 /tmp/
+
+# Keys and certificates
+/certs/
+*.key
+*.pem
+*.pfx
+*.p12
+*.crt
+*.cer

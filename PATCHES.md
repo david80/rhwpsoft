@@ -68,7 +68,7 @@
   - 미서명 앱 실행 시 macOS Gatekeeper "손상되어 열 수 없습니다" 에러 발생.
 - **조치 사항**:
   - Windows 빌드 설정에 `signAndEditExecutable: false` 적용 및 Homebrew의 최신 ARM64 네이티브 `makensis` (v3.12) 심볼릭 링크 연동.
-  - 자체 서명 인증서 생성 도구(`scripts/create-self-signed-cert.sh`) 및 macOS 격리 속성 해제 스크립트(`scripts/fix-macos-quarantine.sh`) 탑재.
+  - 자체 서명 인증서 생성 도구(`scripts/create-self-signed-cert.sh`, PATCH-015에서 제거) 및 macOS 격리 속성 해제 스크립트(`scripts/fix-macos-quarantine.sh`) 탑재.
   - 최종 산출물: macOS `.dmg`, `.pkg` 및 Windows `Setup.exe` (NSIS), `Portable.exe` 원클릭 생성 파이프라인 완성.
 
 ---
@@ -213,3 +213,13 @@
   - 수정하지 않은 빌드는 공식 0.9.1과 쪽별 배치·SVG·인쇄 SVG·레이어 트리가 모두 같음.
   - 수정한 빌드는 업스트림 샘플 332개(암호 문서 등 처리하지 못한 4개 제외)와 내장 샘플에서 달라진 쪽이 없고, `sample2.hwp` 6쪽만 달라짐. 서명 y: 393.9 → 509.6 (PATCH-001 v8 계산값 509.7). 이에 따라 v8 보정은 이 문서에 적용되지 않음.
 - **비고**: `public/rhwp_bg.wasm`은 앱이 사용하지 않으며 npm 공식 WASM을 유지. PATCH-001 v8은 공식 엔진으로 되돌릴 때를 위해 유지. 업스트림 판올림 시 Studio 번들을 교체하면 이 WASM도 공식본으로 돌아가므로, 새 버전에 맞춰 패치를 다시 적용할지 확인할 것.
+
+---
+
+### [PATCH-015] 공개된 인증서 개인 키 제거 (앱 1.0.6)
+- **적용 일자**: 2026-11-25
+- **영향 범위**: `certs/*`(삭제), `scripts/create-self-signed-cert.sh`·`scripts/install-cert-windows.bat`(삭제), `scripts/remove-cert-windows.bat`(신규), `SECURITY.md`(신규), `.gitignore`, `.gitattributes`(신규), `README*.md`
+- **문제**: 2026-09-29 커밋부터 자체 서명 인증서의 개인 키와 PFX, PFX 비밀번호가 공개 저장소에 있었음. 인증서는 `CA:TRUE`에 용도 제한이 없고 등록 스크립트가 Windows 루트 저장소에 넣으므로, 등록한 PC는 이 키로 만든 인증서를 모두 신뢰하게 됨.
+- **확인**: 1.0.5 설치 파일과 실행 파일은 이 인증서로 서명되지 않았고(Authenticode 없음) 앱에도 들어 있지 않아, 제거해도 기능에 영향이 없음. macOS는 해당 없음.
+- **조치**: 키·인증서·생성 및 등록 스크립트를 삭제하고 `.gitignore`로 재발을 막음. 등록한 사용자를 위해 제거 스크립트와 공지를 추가. README 안내대로 직접 만든 인증서는 지문이 다르므로 이름으로도 찾아 제거.
+- **비고**: 제거 스크립트는 실제 Windows에서 실행해 확인하지 않음. 저장소 기록에서도 키와 PFX를 지워 2026-09-29 이후 커밋과 `v1.0.5` 태그의 해시가 바뀜.
