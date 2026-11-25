@@ -100,16 +100,7 @@ body {
 .brand-logo-icon {
   width: 28px;
   height: 28px;
-  border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
-  color: white;
-  font-weight: 800;
-  font-size: 14px;
-  letter-spacing: -0.5px;
+  display: block;
 }
 
 .brand-title {
@@ -400,16 +391,10 @@ body {
 .drop-icon-box {
   width: 80px;
   height: 80px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.05) 100%);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 38px;
+  border-radius: 18px;
+  display: block;
   margin-bottom: 20px;
-  color: #60a5fa;
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   animation: float 4s ease-in-out infinite;
 }
 
@@ -421,8 +406,15 @@ body {
 .welcome-title {
   font-size: 26px;
   font-weight: 700;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   letter-spacing: -0.5px;
+}
+
+.welcome-tagline {
+  font-size: 15px;
+  font-weight: 600;
+  color: #edbe4f;
+  margin-bottom: 12px;
 }
 
 .welcome-subtitle {
@@ -490,6 +482,17 @@ body {
 .feature-item-desc {
   font-size: 11px;
   color: var(--text-muted);
+}
+
+/* 낮은 창(최소 높이 640)에서도 시작 화면이 잘리지 않게 한다 */
+@media (max-height: 760px) {
+  .welcome-screen { padding: 16px 32px; }
+  .welcome-card { padding: 24px 36px; }
+  .drop-icon-box { width: 56px; height: 56px; border-radius: 13px; margin-bottom: 12px; }
+  .welcome-subtitle { margin-bottom: 16px; }
+  .format-tags { margin-bottom: 16px; }
+  .welcome-actions { margin-bottom: 12px; }
+  .feature-highlights { margin-top: 8px; padding-top: 16px; }
 }
 
 /* Fullscreen Drag Overlay */
@@ -666,6 +669,47 @@ body {
 .modal-close-btn:hover {
   color: var(--text-primary);
   background: rgba(255, 255, 255, 0.08);
+}
+
+.brand-story {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.brand-story-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.brand-story-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.brand-story-item img {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.brand-story-item strong {
+  color: var(--text-primary);
+}
+
+/* rhwp 로고는 글자가 남색이라 밝은 바탕이 필요하다 */
+.brand-story-item .brand-story-engine {
+  padding: 4px;
+  border-radius: var(--radius-md);
+  background: #ffffff;
 }
 
 .export-grid {

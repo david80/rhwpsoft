@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <title>RHWP STUDIO</title>
+  <rect width="16" height="16" rx="3" fill="#FBF6EA"/>
+  <path d="M8 1C10.2 1 11.5 3.9 11.5 6C11.5 8.2 10 9.6 8 9.6C6 9.6 4.5 8.2 4.5 6C4.5 3.9 5.8 1 8 1Z" fill="#EDBE4F"/>
+  <path d="M1 6H3.2C3.4 8.7 5 10.6 7.5 10.9V15C5.8 13.8 3.6 13.2 1 13.2Z" fill="#1B3A6B"/>
+  <path d="M15 6H12.8C12.6 8.7 11 10.6 8.5 10.9V15C10.2 13.8 12.4 13.2 15 13.2Z" fill="#E8731A"/>
+</svg>

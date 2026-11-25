@@ -1,4 +1,12 @@
+<p align="center">
+  <img src="public/brand/studio-logo.svg" alt="RHWP STUDIO 로고" width="128" />
+</p>
+
 # RHWP STUDIO
+
+<p align="center">
+  <strong>모두의 한글을 내 컴퓨터에 품다</strong>
+</p>
 
 <p align="center">
   <strong>RHWP STUDIO</strong> — 100% 로컬 독립 실행형 한글(HWP / HWPX / HML) 문서 뷰어 & 편집기 소프트웨어<br/>
@@ -6,7 +14,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-1.0.5-blue.svg" alt="Version" />
+  <img src="https://img.shields.io/badge/Version-1.0.6-blue.svg" alt="Version" />
   <img src="https://img.shields.io/badge/Platform-Web%20%7C%20Electron%20(macOS%2C%20Windows)-brightgreen.svg" alt="Platform" />
   <img src="https://img.shields.io/badge/Engine-rhwp%20v0.9.1%20WASM-orange.svg" alt="Engine" />
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License" />
@@ -31,6 +39,22 @@
   - 웹 브라우저(`http://localhost:7788`)에서 가볍고 빠르게 실행.
   - Electron 기반 데스크톱 애플리케이션(macOS `.app`/`.dmg`, Windows `.exe`)으로 설치 및 네이티브 실행.
 - **다국어 지원 (i18n)**: 한국어(KO) 및 영어(EN) 원클릭 즉시 전환 지원.
+
+---
+
+## 🥚 로고와 이름의 뜻
+
+| 로고 | 뜻 |
+|:----:|----|
+| <img src="public/brand/rhwp-logo.png" alt="rhwp 엔진 로고" width="72" /> | **rhwp 엔진 — 알(R), 모두의 한글. 알에서 시작하다**<br/>알은 시작이자 알맹이이고, '알다'의 알이며, 영어 All(모두)과도 통합니다. 닫힌 포맷의 껍질을 깨고 누구나 쓸 수 있게 한다는 뜻입니다. ([업스트림 브랜딩 문서](https://github.com/edwardkim/rhwp/blob/main/mydocs/manual/branding_strategy.md)) |
+| <img src="public/brand/studio-logo.svg" alt="RHWP STUDIO 로고" width="72" /> | **RHWP STUDIO — 알을 품다**<br/>rhwp 로고에서 알을 이루던 남색·주황 껍질 두 쪽이 펼친 문서 두 쪽이 되어, 알(엔진)을 품은 모양입니다. '쪽'은 쪼갠 조각이면서 문서의 페이지입니다. 문서를 밖으로 보내지 않고 내 컴퓨터 안에서 다룬다는 뜻도 담았습니다. |
+
+| 색 | 값 | 뜻 |
+|----|----|----|
+| 남색 | `#1B3A6B` | 신뢰와 정확성 (rhwp와 같음) |
+| 주황 | `#E8731A` | Rust, 에너지 (rhwp와 같음) |
+| 금색 | `#EDBE4F` | 알의 빛남 (rhwp의 금색을 작은 크기에서도 보이도록 밝게 조정) |
+| 한지색 | `#FBF6EA` | 종이와 문서 |
 
 ---
 
@@ -80,6 +104,7 @@ rhwpsoft/
 │   ├── main.ts                # 윈도우 생성, 네이티브 시스템 메뉴, IPC 핸들러
 │   └── preload.ts             # 보안 IPC 브리지 (Window.electronAPI)
 ├── public/                     # 정적 에셋 및 로컬 번들
+│   ├── brand/                 # RHWP STUDIO·rhwp 엔진 로고, 파비콘
 │   ├── studio/                # 100% 로컬 독립 실행용 rhwp-studio 빌드 번들
 │   ├── rhwp_bg.wasm           # rhwp WebAssembly 코어 엔진 바이너리
 │   └── sample.hwp             # 테스트용 내장 샘플 한글 문서
@@ -198,5 +223,7 @@ RHWP STUDIO는 모든 문서 파싱과 렌더링, 편집 작업을 **사용자�
 
 ## 📜 라이선스 및 상표권 안내
 
-- **엔진 라이선스**: [MIT License](LICENSE) (Based on [edwardkim/rhwp](https://github.com/edwardkim/rhwp))
+- **앱 라이선스**: [MIT License](LICENSE) — Copyright (c) 2026 davidlee
+- **엔진 라이선스**: [MIT License](public/brand/rhwp-LICENSE.txt) — Copyright (c) 2025-2026 Edward Kim ([edwardkim/rhwp](https://github.com/edwardkim/rhwp))
+- **로고**: rhwp 엔진 로고는 edwardkim/rhwp의 원본을 그대로 사용했습니다([MIT, © 2025-2026 Edward Kim](public/brand/rhwp-LICENSE.txt)). RHWP STUDIO 로고는 rhwp의 뜻과 색을 이어받아 새로 그린 것으로, RHWP STUDIO는 rhwp 공식 배포본이 아닙니다.
 - **상표권 고지**: "한글", "한컴", "HWP", "HWPX"는 주식회사 한글과컴퓨터의 등록 상표입니다. 본 프로젝트는 한글과컴퓨터와 제휴, 후원, 승인 관계가 없는 독립적인 오픈소스 소프트웨어입니다.

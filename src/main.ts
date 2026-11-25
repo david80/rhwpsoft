@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const labelCurrentLang = document.getElementById('label-current-lang') as HTMLElement;
 
   // Welcome Screen Elements
+  const welcomeTagline = document.getElementById('welcome-tagline') as HTMLElement;
   const welcomeSubtitle = document.getElementById('welcome-subtitle') as HTMLElement;
   const textWelcomeOpen = document.getElementById('text-welcome-open') as HTMLElement;
   const textWelcomeSample = document.getElementById('text-welcome-sample') as HTMLElement;
@@ -79,6 +80,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   const modalLabelPages = document.getElementById('modal-label-pages') as HTMLElement;
   const modalLabelBackend = document.getElementById('modal-label-backend') as HTMLElement;
   const modalLabelLicense = document.getElementById('modal-label-license') as HTMLElement;
+  const brandStoryTitle = document.getElementById('brand-story-title') as HTMLElement;
+  const brandStudioName = document.getElementById('brand-studio-name') as HTMLElement;
+  const brandStudioDesc = document.getElementById('brand-studio-desc') as HTMLElement;
+  const brandEngineName = document.getElementById('brand-engine-name') as HTMLElement;
+  const brandEngineDesc = document.getElementById('brand-engine-desc') as HTMLElement;
   const btnCloseModal = document.getElementById('btn-close-modal') as HTMLButtonElement;
   const btnCloseModalConfirm = document.getElementById('btn-close-modal-confirm') as HTMLButtonElement;
   const modalInfoFilename = document.getElementById('modal-info-filename') as HTMLElement;
@@ -122,6 +128,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnFullscreen.title = t.subToolbar.fullscreen;
 
     // Welcome Screen
+    welcomeTagline.textContent = t.welcome.tagline;
     welcomeSubtitle.textContent = t.welcome.subtitle;
     textWelcomeOpen.textContent = t.welcome.openBtn;
     textWelcomeSample.textContent = t.welcome.sampleBtn;
@@ -147,6 +154,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     modalLabelPages.textContent = t.modal.pages;
     modalLabelBackend.textContent = t.modal.backend;
     modalLabelLicense.textContent = t.modal.license;
+    brandStoryTitle.textContent = t.brand.storyTitle;
+    brandStudioName.textContent = t.brand.studioName;
+    brandStudioDesc.textContent = t.brand.studioDesc;
+    brandEngineName.textContent = t.brand.engineName;
+    brandEngineDesc.textContent = t.brand.engineDesc;
     btnCloseModalConfirm.textContent = t.modal.confirm;
 
     updateUIState();

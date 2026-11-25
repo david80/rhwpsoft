@@ -216,6 +216,22 @@
 
 ---
 
+### [PATCH-014] 로고와 이름의 뜻 적용, Windows 실행 파일 아이콘 수정 (앱 1.0.6)
+- **적용 일자**: 2026-11-25
+- **영향 범위**: `public/brand/*`(신규), `build/icon.*`, `scripts/build-icons.cjs`(신규), `scripts/win-exe-resources.cjs`(신규), `index.html`, `src/styles/app.css`, `src/i18n/locales.ts`, `src/main.ts`, `electron/main.ts`, `package.json`, `README*.md`
+- **배경**: 앱 아이콘은 업스트림 로고와 같은 파일이었고, 앱 안의 로고는 임시 글자 '한', 파비콘은 일반 문서 모양이었음. 업스트림 로고는 글자까지 들어 있고 남색이라 작은 크기와 어두운 화면에서 잘 보이지 않음.
+- **결정**:
+  1. **rhwp 엔진**: 업스트림 로고 원본과 뜻(알(R), 모두의 한글 — 알에서 시작하다)을 정보 창과 README에 출처·MIT 고지와 함께 표시. 원본은 수정하지 않음.
+  2. **RHWP STUDIO**: '알을 품다'. 업스트림 로고의 남색·주황 껍질 두 쪽이 펼친 문서 두 쪽이 되어 알(엔진)을 품은 모양. 앱 아이콘을 업스트림과 구분해 공식 배포본으로 오해하지 않게 함.
+- **자산**: 원본은 `public/brand/studio-logo.svg`와 16px 단순형 `studio-logo-small.svg`. 나머지는 `scripts/build-icons.cjs`로 생성(macOS는 1024 캔버스에 824 타일, Windows는 여백 없음).
+- **Windows 실행 파일**: `signAndEditExecutable: false`(PATCH-004) 때문에 1.0.5까지 설치된 `RHWP STUDIO.exe`의 아이콘·제품 이름이 Electron 기본값이었음. wine 없이 동작하는 `resedit`으로 `afterPack`에서 넣도록 수정.
+- **함께 고친 것**: 낮은 창(최소 높이 640)에서 시작 화면 아래가 잘리던 문제, 정보 창의 라이선스 문구가 두 번 나오던 문제.
+- **검증**: 패키징한 macOS 앱(arm64)에서 시작 화면·정보 창을 한국어/영어, 1360×850/960×612로 확인하고 샘플 문서 열기 정상. Windows는 `RHWP STUDIO.exe`와 설치 파일의 아이콘 7종·버전 정보·asar 무결성 항목을 파일에서 확인했으며, 실제 Windows에서의 실행은 확인하지 않음.
+- **라이선스**: 저장소에 없던 `LICENSE`(MIT, davidlee)를 추가하고 앱과 엔진의 저작권 표시를 구분. 실행 파일의 저작권 표시도 davidlee로 변경.
+- **비고**: Studio 번들(`public/studio`)의 파비콘과 아이콘은 업스트림 것을 유지.
+
+---
+
 ### [PATCH-015] 공개된 인증서 개인 키 제거 (앱 1.0.6)
 - **적용 일자**: 2026-11-25
 - **영향 범위**: `certs/*`(삭제), `scripts/create-self-signed-cert.sh`·`scripts/install-cert-windows.bat`(삭제), `scripts/remove-cert-windows.bat`(신규), `SECURITY.md`(신규), `.gitignore`, `.gitattributes`(신규), `README*.md`

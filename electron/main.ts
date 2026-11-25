@@ -394,6 +394,10 @@ ipcMain.handle('app:openExternal', async (_event, url: string) => {
   await shell.openExternal(url);
 });
 
+app.setAboutPanelOptions({
+  credits: '알을 품다 — 모두의 한글을 내 컴퓨터에 품다\n\nrhwp 엔진 (알, 모두의 한글)\n© 2025-2026 Edward Kim, MIT License',
+});
+
 app.whenReady().then(() => {
   createWindow();
 

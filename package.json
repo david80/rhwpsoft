@@ -1,7 +1,7 @@
 {
   "name": "rhwp-studio",
   "productName": "RHWP STUDIO",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "RHWP STUDIO — Modern HWP/HWPX Document Viewer & Editor",
   "main": "dist-electron/main.cjs",
   "type": "module",
@@ -40,6 +40,7 @@
     "electron": "^35.0.0",
     "electron-builder": "^25.1.8",
     "esbuild": "^0.25.0",
+    "resedit": "^1.7.2",
     "typescript": "^5.8.2",
     "vite": "^6.2.0",
     "wait-on": "^8.0.2"
@@ -51,6 +52,7 @@
   "build": {
     "appId": "com.rhwp.studio",
     "productName": "RHWP STUDIO",
+    "copyright": "Copyright © 2026 davidlee",
     "directories": {
       "output": "release"
     },
@@ -58,6 +60,7 @@
       "dist/**/*",
       "dist-electron/**/*"
     ],
+    "afterPack": "scripts/win-exe-resources.cjs",
     "mac": {
       "category": "public.app-category.productivity",
       "target": [
@@ -76,7 +79,7 @@
           ]
         }
       ],
-      "icon": "build/icon.png"
+      "icon": "build/icon.icns"
     },
     "dmg": {
       "title": "RHWP STUDIO ${version}${arch}",
@@ -112,7 +115,7 @@
           ]
         }
       ],
-      "icon": "build/icon.png",
+      "icon": "build/icon.ico",
       "signAndEditExecutable": false
     },
     "nsis": {

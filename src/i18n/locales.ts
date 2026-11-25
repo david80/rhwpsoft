@@ -4,6 +4,11 @@ export interface Translations {
   brand: {
     title: string;
     engineBadge: string;
+    storyTitle: string;
+    studioName: string;
+    studioDesc: string;
+    engineName: string;
+    engineDesc: string;
   };
   mode: {
     viewer: string;
@@ -37,6 +42,7 @@ export interface Translations {
   };
   welcome: {
     title: string;
+    tagline: string;
     subtitle: string;
     openBtn: string;
     sampleBtn: string;
@@ -86,6 +92,13 @@ export const messages: Record<Language, Translations> = {
     brand: {
       title: 'RHWP STUDIO',
       engineBadge: 'v0.9.1 엔진',
+      storyTitle: '로고와 이름의 뜻',
+      studioName: 'RHWP STUDIO — 알을 품다',
+      studioDesc:
+        '껍질 두 쪽이 펼친 문서 두 쪽이 되어 알(rhwp 엔진)을 품은 모양입니다. 문서를 밖으로 보내지 않고 내 컴퓨터 안에서 다룬다는 뜻도 담았습니다.',
+      engineName: 'rhwp 엔진 — 알(R), 모두의 한글',
+      engineDesc:
+        '알은 시작이자 알맹이이고, ‘알다’의 알이며, 영어 All(모두)과도 통합니다. 닫힌 포맷의 껍질을 깨고 누구나 쓸 수 있게 한다는 뜻입니다.',
     },
     mode: {
       viewer: '뷰어 모드',
@@ -119,6 +132,7 @@ export const messages: Record<Language, Translations> = {
     },
     welcome: {
       title: 'RHWP STUDIO',
+      tagline: '모두의 한글을 내 컴퓨터에 품다',
       subtitle:
         '한컴 오피스 설치 없이, 브라우저와 데스크톱에서 완벽하게 구동되는 오픈소스 한글 문서 뷰어 및 편집기입니다.',
       openBtn: '한글 문서 열기',
@@ -147,7 +161,7 @@ export const messages: Record<Language, Translations> = {
       format: '포맷:',
       pages: '페이지 수:',
       backend: '렌더러 백엔드:',
-      license: '엔진 라이선스: MIT License (edwardkim/rhwp)',
+      license: '엔진 라이선스:',
       confirm: '확인',
     },
     toasts: {
@@ -167,6 +181,13 @@ export const messages: Record<Language, Translations> = {
     brand: {
       title: 'RHWP STUDIO',
       engineBadge: 'v0.9.1 Engine',
+      storyTitle: 'What the logos mean',
+      studioName: 'RHWP STUDIO — Holding the egg',
+      studioDesc:
+        'Two halves of a shell open into two pages that hold the egg, the rhwp engine. In Korean, “쪽” (jjok) means both “half” and “page”. It also stands for keeping your documents on your own computer.',
+      engineName: 'rhwp engine — All HWP, Open for Everyone',
+      engineDesc:
+        '“R” sounds like “알” (al), Korean for egg: a beginning, a core, and the root of “알다”, to know. It also echoes “All”. The egg breaks the shell of a closed format and opens it to everyone.',
     },
     mode: {
       viewer: 'Viewer Mode',
@@ -200,6 +221,7 @@ export const messages: Record<Language, Translations> = {
     },
     welcome: {
       title: 'RHWP STUDIO',
+      tagline: 'All HWP, at home on your computer',
       subtitle:
         'A modern open-source HWP/HWPX viewer & editor running completely offline in your browser and desktop without Hancom Office.',
       openBtn: 'Open HWP Document',
@@ -228,7 +250,7 @@ export const messages: Record<Language, Translations> = {
       format: 'Format:',
       pages: 'Page Count:',
       backend: 'Renderer Backend:',
-      license: 'Engine License: MIT License (edwardkim/rhwp)',
+      license: 'Engine License:',
       confirm: 'OK',
     },
     toasts: {

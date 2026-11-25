@@ -1,4 +1,12 @@
+<p align="center">
+  <img src="public/brand/studio-logo.svg" alt="RHWP STUDIO logo" width="128" />
+</p>
+
 # RHWP STUDIO
+
+<p align="center">
+  <strong>All HWP, at home on your computer</strong>
+</p>
 
 <p align="center">
   <strong>RHWP STUDIO</strong> — 100% Standalone Offline HWP/HWPX Document Viewer & Editor<br/>
@@ -6,7 +14,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-1.0.5-blue.svg" alt="Version" />
+  <img src="https://img.shields.io/badge/Version-1.0.6-blue.svg" alt="Version" />
   <img src="https://img.shields.io/badge/Platform-Web%20%7C%20Electron%20(macOS%2C%20Windows)-brightgreen.svg" alt="Platform" />
   <img src="https://img.shields.io/badge/Engine-rhwp%20v0.9.1%20WASM-orange.svg" alt="Engine" />
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License" />
@@ -31,6 +39,15 @@
   - Run as a fast web application at `http://localhost:7788`.
   - Packaged native desktop app for macOS (`.dmg`, `.pkg`) and Windows (`.exe` NSIS installer & Portable).
 - **Multi-language Support (i18n)**: One-click instant switching between Korean (한국어) and English (English).
+
+---
+
+## 🥚 What the Logos Mean
+
+| Logo | Meaning |
+|:----:|---------|
+| <img src="public/brand/rhwp-logo.png" alt="rhwp engine logo" width="72" /> | **rhwp engine — All HWP, Open for Everyone**<br/>"R" sounds like "알" (al), Korean for egg: a beginning, a core, and the root of "알다", to know. It also echoes "All". The egg breaks the shell of a closed format and opens it to everyone. ([Upstream branding document](https://github.com/edwardkim/rhwp/blob/main/mydocs/eng/manual/branding_strategy.md)) |
+| <img src="public/brand/studio-logo.svg" alt="RHWP STUDIO logo" width="72" /> | **RHWP STUDIO — Holding the egg**<br/>The navy and orange shell halves of the rhwp logo open into two pages that hold the egg, the engine. In Korean, "쪽" (jjok) means both "half" and "page". It also stands for keeping your documents on your own computer. |
 
 ---
 
@@ -154,5 +171,7 @@ All document parsing, rendering, and editing processes are executed **100% local
 
 ## 📜 License & Trademarks
 
-- **Engine License**: [MIT License](LICENSE) (Based on [edwardkim/rhwp](https://github.com/edwardkim/rhwp))
+- **App License**: [MIT License](LICENSE) — Copyright (c) 2026 davidlee
+- **Engine License**: [MIT License](public/brand/rhwp-LICENSE.txt) — Copyright (c) 2025-2026 Edward Kim ([edwardkim/rhwp](https://github.com/edwardkim/rhwp))
+- **Logos**: The rhwp engine logo is the unmodified original from edwardkim/rhwp ([MIT, © 2025-2026 Edward Kim](public/brand/rhwp-LICENSE.txt)). The RHWP STUDIO logo is a new drawing based on rhwp's meaning and colors. RHWP STUDIO is not an official rhwp distribution.
 - **Trademarks**: "Hancom", "Hangul", "HWP", and "HWPX" are registered trademarks of Hancom Inc. This project is an independent open-source software with no official affiliation with Hancom Inc.
